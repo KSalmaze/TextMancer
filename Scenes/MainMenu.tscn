@@ -1,4 +1,7 @@
-[gd_scene format=3 uid="uid://dn2rmy66w8sg1"]
+[gd_scene load_steps=3 format=3 uid="uid://dn2rmy66w8sg1"]
+
+[ext_resource type="Script" uid="uid://byjf3dp53vwvi" path="res://addons/textmancer/MainNodes/Conductor.cs" id="1_tt5f1"]
+[ext_resource type="Script" uid="uid://cafw108hsn24b" path="res://addons/textmancer/MainNodes/TextBox.cs" id="2_853f1"]
 
 [node name="Control" type="Control"]
 layout_mode = 3
@@ -26,3 +29,15 @@ BBBBBBBBBBB
 CCCCCCCCCCCC"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="Conductor" type="Control" parent="RichTextLabel"]
+anchors_preset = 0
+script = ExtResource("1_tt5f1")
+metadata/_custom_type_script = "uid://byjf3dp53vwvi"
+
+[node name="TextBox" type="RichTextLabel" parent="RichTextLabel/Conductor"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("2_853f1")
+metadata/_custom_type_script = "uid://cafw108hsn24b"

@@ -1,13 +1,8 @@
 using Godot;
 
-namespace TextMancer.TextMancer.MainNodes;
+namespace TextMancer.addons.textmancer.MainNodes;
 
 public partial class Conductor: Control
 {
-	private string _nome;
-	public string Nome
-	{
-		get { return _nome; }
-		set { _nome = value; }
-	}
+	[Export] public bool HyperThreadingEnabled = false;
 }
