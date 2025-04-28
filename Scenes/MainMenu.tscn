@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://dn2rmy66w8sg1"]
+[gd_scene load_steps=4 format=3 uid="uid://dn2rmy66w8sg1"]
 
 [ext_resource type="Script" uid="uid://byjf3dp53vwvi" path="res://addons/textmancer/MainNodes/Conductor.cs" id="1_tt5f1"]
 [ext_resource type="Script" uid="uid://cafw108hsn24b" path="res://addons/textmancer/MainNodes/TextBox.cs" id="2_853f1"]
+[ext_resource type="Script" uid="uid://dcc6nbil6206o" path="res://addons/textmancer/MainNodes/TextObject.cs" id="3_8saeu"]
 
 [node name="Control" type="Control"]
 layout_mode = 3
@@ -11,33 +12,38 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="RichTextLabel" type="RichTextLabel" parent="."]
+[node name="Conductor" type="Control" parent="."]
 layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -576.0
-offset_top = -324.0
-offset_right = 576.0
-offset_bottom = 324.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-text = "AAAAAAAAAAA
-BBBBBBBBBBB
-CCCCCCCCCCCC"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="Conductor" type="Control" parent="RichTextLabel"]
-anchors_preset = 0
 script = ExtResource("1_tt5f1")
 metadata/_custom_type_script = "uid://byjf3dp53vwvi"
 
-[node name="TextBox" type="RichTextLabel" parent="RichTextLabel/Conductor"]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+[node name="MainTextBox" type="RichTextLabel" parent="Conductor"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = 8.0
+grow_horizontal = 2
+grow_vertical = 2
+bbcode_enabled = true
+text = "O"
+horizontal_alignment = 1
+vertical_alignment = 1
 script = ExtResource("2_853f1")
 metadata/_custom_type_script = "uid://cafw108hsn24b"
+
+[node name="TextObject" type="Control" parent="Conductor/MainTextBox"]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("3_8saeu")
+Sprite = "@#"
+metadata/_custom_type_script = "uid://dcc6nbil6206o"
