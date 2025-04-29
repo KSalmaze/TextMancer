@@ -7,7 +7,7 @@ using System.Collections.Generic;
 public partial class TextBox : RichTextLabel
 {
 	[Export] public Vector2I resolution; // Bloquear negativos
-	[Export] public char baseChar = '.';
+	[Export] public string baseChar = ".";
 	[Export] public int FrameRate = 15;
 	public List<TextObject> _textObjects;
 	private double _timeSinceLastUpdate = 0;
@@ -29,6 +29,7 @@ public partial class TextBox : RichTextLabel
 	
 	public void UpdateBox()
 	{
+		resolution = new Vector2I(100, 25);
 		GD.Print("UpdateBox");
 		
 		ClearScreenLines();
@@ -58,7 +59,7 @@ public partial class TextBox : RichTextLabel
 	private void ClearScreenLines()
 	{
 		_screenLines = new string[resolution.Y];
-		string baseLine = new string(baseChar, resolution.X);
+		string baseLine = new string(baseChar[0], resolution.X);
 
 		for (int i = 0; i < resolution.Y; i++)
 		{

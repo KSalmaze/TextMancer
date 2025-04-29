@@ -1,11 +1,14 @@
 using Godot;
 using System;
+using System.Text.Json;
 
 [Tool]
 public partial class TextObject : Control, IComparable<TextObject>
 {
     [Export] public Vector2I ObjectPosition;
     [Export] public int Layer;
+    [Export(PropertyHint.File, "*.json")]
+    public string JsonFilePath = "";
     
     private string _sprite; 
     [Export] public string Sprite
@@ -21,11 +24,31 @@ public partial class TextObject : Control, IComparable<TextObject>
         }
     }
 
+    [Export] public bool testing
+    {
+        get => false;
+        set => Update();
+    }
+    
+    public override void _Ready()
+    {
+    }
+
     public bool VerifyPosition()
     {
         return true;
     }
     
+    public void Update()
+    {
+        var file = FileAccess.Open(JsonFilePath, FileAccess.ModeFlags.Read);
+        string jsonText = file.GetAsText();
+        file.Close();
+        
+        JsonDocument json = JsonDocument.Parse(jsonText);
+        //GD.Print(json.RootElement.GetProperty("sprite"));
+        Sprite = json.RootElement.GetProperty("sprite").ToString();
+    }
     public int CompareTo(TextObject obj)
     {
         return Layer.CompareTo(obj.Layer);
