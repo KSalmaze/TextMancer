@@ -46,7 +46,6 @@ public partial class TextObject : Control, IComparable<TextObject>
         file.Close();
         
         JsonDocument json = JsonDocument.Parse(jsonText);
-        //GD.Print(json.RootElement.GetProperty("sprite"));
         Sprite = json.RootElement.GetProperty("sprite").ToString();
     }
     public int CompareTo(TextObject obj)

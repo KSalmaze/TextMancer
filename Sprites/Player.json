@@ -1,5 +1,5 @@
 {
-    "sprite": "PLAYER",
+	"sprite": "PLAYER",
 
-    "collision": "111111"
+	"collision": "111111"
 }

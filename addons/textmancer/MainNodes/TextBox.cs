@@ -21,6 +21,7 @@ public partial class TextBox : RichTextLabel
 	
 	public override void _Ready()
 	{
+		resolution = new Vector2I(100, 25);
 	}
 	
 	public override void _Process(double delta)
@@ -29,7 +30,7 @@ public partial class TextBox : RichTextLabel
 	
 	public void UpdateBox()
 	{
-		resolution = new Vector2I(100, 25);
+		//resolution = new Vector2I(100, 25);
 		GD.Print("UpdateBox");
 		
 		ClearScreenLines();
@@ -70,6 +71,10 @@ public partial class TextBox : RichTextLabel
 	private void UpdateTextObjects()
 	{
 		_textObjects = GetChilds<TextObject>();
+		foreach (var to in _textObjects)
+		{
+			to.TextObjectChanged += UpdateBox;
+		}
 		GD.Print(_textObjects.Count);
 		_textObjects.Sort();
 		UpdateBox();
