@@ -5,6 +5,13 @@ using System.Text.Json;
 [Tool]
 public partial class TextObject : Control, IComparable<TextObject>
 {
+    [ExportGroup("Transform")]
+    [Export] public bool testing
+    {
+        get => false;
+        set => Update();
+    }
+    
     private Vector2I _position;
 
     [Export]
@@ -21,29 +28,23 @@ public partial class TextObject : Control, IComparable<TextObject>
         }
     }
     
-    [Export] public int Layer;
-    [Export(PropertyHint.File, "*.json")]
-    public string JsonFilePath = "";
+    
+    [ExportGroup("Sprite")]
     
     private string _sprite; 
     [Export] public string Sprite
     {
-        get
-        {
-            return _sprite;
-        }
+        get => _sprite;
         set
         {
             _sprite = value;
             EmitSignal(SignalName.TextObjectChanged);
         }
     }
-
-    [Export] public bool testing
-    {
-        get => false;
-        set => Update();
-    }
+    
+    [Export(PropertyHint.File, "*.json")] public string JsonFilePath = "";
+    
+    [Export] public int Layer;
     
     public override void _Ready()
     {
@@ -57,6 +58,12 @@ public partial class TextObject : Control, IComparable<TextObject>
     public void Update()
     {
         var file = FileAccess.Open(JsonFilePath, FileAccess.ModeFlags.Read);
+
+        if (file == null)
+        {
+            Sprite = "JSON ERROR";
+            return;
+        }
         string jsonText = file.GetAsText();
         file.Close();
         
