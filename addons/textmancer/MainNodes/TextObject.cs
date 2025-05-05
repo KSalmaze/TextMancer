@@ -5,7 +5,22 @@ using System.Text.Json;
 [Tool]
 public partial class TextObject : Control, IComparable<TextObject>
 {
-    [Export] public Vector2I ObjectPosition;
+    private Vector2I _position;
+
+    [Export]
+    public Vector2I ObjectPosition
+    {
+        get => _position;
+        set
+        {
+            if (VerifyPosition())
+            {
+                _position = value;
+                EmitSignal(SignalName.TextObjectChanged);
+            }
+        }
+    }
+    
     [Export] public int Layer;
     [Export(PropertyHint.File, "*.json")]
     public string JsonFilePath = "";
