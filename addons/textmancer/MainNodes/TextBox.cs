@@ -37,22 +37,25 @@ public partial class TextBox : RichTextLabel
 		
 		foreach (TextObject textObject in _textObjects)
 		{
-			int line = textObject.ObjectPosition.Y;
-			
-			if (line >= resolution.Y || line < 0) continue;
-			
-			GD.Print($" Screen: {_screenLines.Length} - Pos: {line}");
-			char[] temp = _screenLines[line].ToCharArray();
-
-			for(int i = 0; i < textObject.Sprite.Length; i++)
+			for (int j = 0; j < textObject.Sprite.Length; j++)
 			{
-				int coord = i + textObject.ObjectPosition.X;
+				int line = textObject.ObjectPosition.Y + j;
+				if (line >= resolution.Y || line < 0) continue;
 				
-				if(coord >= resolution.X || coord < 0) continue;
-				temp[coord] = textObject.Sprite[i];
+				GD.Print($" Screen: {_screenLines.Length} - Pos: {line}");
+				
+				char[] temp = _screenLines[line].ToCharArray();
+				
+				for(int i = 0; i < textObject.Sprite[j].Length; i++)
+				{
+					int coord = i + textObject.ObjectPosition.X;
+				
+					if(coord >= resolution.X || coord < 0) continue;
+					temp[coord] = textObject.Sprite[j][i];
+				}
+				
+				_screenLines[line] = new string(temp);
 			}
-			
-			_screenLines[line] = new string(temp);
 		}
 		
 		Text = String.Empty;

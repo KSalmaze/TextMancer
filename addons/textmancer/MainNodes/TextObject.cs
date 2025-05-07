@@ -5,11 +5,13 @@ using System.Text.Json;
 [Tool]
 public partial class TextObject : Control, IComparable<TextObject>
 {
+    [Signal] public delegate void TextObjectChangedEventHandler();
+    
     [ExportGroup("Transform")]
     [Export] public bool testing
     {
         get => false;
-        set => Update();
+        set => AcessJson();
     }
     
     private Vector2I _position;
@@ -27,12 +29,14 @@ public partial class TextObject : Control, IComparable<TextObject>
             }
         }
     }
+
+
+    [ExportGroup("Sprite")] 
     
-    
-    [ExportGroup("Sprite")]
-    
-    private string _sprite; 
-    [Export] public string Sprite
+    private string _sprite;
+
+    public string[] Sprite;
+    [Export] private string SpritePreview
     {
         get => _sprite;
         set
@@ -42,7 +46,7 @@ public partial class TextObject : Control, IComparable<TextObject>
         }
     }
     
-    [Export(PropertyHint.File, "*.json")] public string JsonFilePath = "";
+    [Export(PropertyHint.File, "*.json")] public string JsonFilePath;
     
     [Export] public int Layer;
     
@@ -55,25 +59,33 @@ public partial class TextObject : Control, IComparable<TextObject>
         return true;
     }
     
-    public void Update()
+    public void AcessJson()
     {
         var file = FileAccess.Open(JsonFilePath, FileAccess.ModeFlags.Read);
 
         if (file == null)
         {
-            Sprite = "JSON ERROR";
+            Sprite[0] = "JSON ERROR";
             return;
         }
         string jsonText = file.GetAsText();
         file.Close();
         
         JsonDocument json = JsonDocument.Parse(jsonText);
-        Sprite = json.RootElement.GetProperty("sprite").ToString();
+        JsonElement elements = json.RootElement.GetProperty("sprite");
+        
+        Sprite = new string[elements.GetArrayLength()];
+
+        int counter = 0;
+        foreach (JsonElement element in elements.EnumerateArray())
+        {
+            GD.Print("Line read: " + element.GetString());
+            Sprite[counter] = element.GetString();
+            counter++;
+        }
     }
     public int CompareTo(TextObject obj)
     {
         return Layer.CompareTo(obj.Layer);
     }
-
-    [Signal] public delegate void TextObjectChangedEventHandler();
 }
