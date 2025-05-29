@@ -1,0 +1,149 @@
+[gd_scene load_steps=4 format=3 uid="uid://hilcno3qu1tj"]
+
+[ext_resource type="Script" uid="uid://byjf3dp53vwvi" path="res://addons/textmancer/MainNodes/Conductor.cs" id="1_gl51a"]
+[ext_resource type="FontFile" uid="uid://daag56kvxsdf2" path="res://Fonts/SpaceMono-Regular.ttf" id="2_iwmoq"]
+[ext_resource type="Script" uid="uid://1fl630gjl8u7" path="res://addons/textmancer/Scripts/SpriteEditor.cs" id="5_ux4l8"]
+
+[node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Conductor" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_gl51a")
+metadata/_custom_type_script = "uid://byjf3dp53vwvi"
+metadata/_edit_lock_ = true
+
+[node name="MainTextBox" type="RichTextLabel" parent="Conductor"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/line_separation = -12
+theme_override_fonts/normal_font = ExtResource("2_iwmoq")
+bbcode_enabled = true
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 35
+script = ExtResource("5_ux4l8")
+TextSize = 21
+metadata/_custom_type_script = "uid://cafw108hsn24b"
+
+[node name="RedimencionarButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 149.0
+offset_bottom = 40.0
+text = "Redimencionar"
+
+[node name="FMenosButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 78.0
+offset_right = 77.0
+offset_bottom = 110.0
+text = "F-"
+
+[node name="FMaisButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 80.0
+offset_top = 78.0
+offset_right = 149.0
+offset_bottom = 110.0
+text = "F+"
+
+[node name="LimparButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 152.0
+offset_top = 78.0
+offset_right = 278.0
+offset_bottom = 110.0
+text = "Limpar"
+
+[node name="SalvarButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 152.0
+offset_top = 43.0
+offset_right = 278.0
+offset_bottom = 75.0
+text = "Salvar"
+
+[node name="EditarButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 496.0
+offset_top = 8.0
+offset_right = 622.0
+offset_bottom = 40.0
+text = "Editar Sprite"
+
+[node name="UPButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 1038.0
+offset_top = 8.0
+offset_right = 1142.0
+offset_bottom = 40.0
+text = "UP"
+
+[node name="DOWNButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 1038.0
+offset_top = 78.0
+offset_right = 1142.0
+offset_bottom = 110.0
+text = "DOWN"
+
+[node name="RIButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 1094.0
+offset_top = 43.0
+offset_right = 1142.0
+offset_bottom = 75.0
+text = "->"
+
+[node name="LEButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 1038.0
+offset_top = 43.0
+offset_right = 1086.0
+offset_bottom = 75.0
+text = "<-"
+
+[node name="XLineEdit" type="LineEdit" parent="."]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 43.0
+offset_right = 77.0
+offset_bottom = 74.0
+placeholder_text = "X"
+alignment = 1
+
+[node name="YLineEdit" type="LineEdit" parent="."]
+layout_mode = 0
+offset_left = 80.0
+offset_top = 43.0
+offset_right = 149.0
+offset_bottom = 74.0
+placeholder_text = "Y"
+alignment = 1
+
+[node name="NameLineEdit" type="LineEdit" parent="."]
+layout_mode = 0
+offset_left = 152.0
+offset_top = 8.0
+offset_right = 328.0
+offset_bottom = 39.0
+placeholder_text = "SpriteName"
+alignment = 1

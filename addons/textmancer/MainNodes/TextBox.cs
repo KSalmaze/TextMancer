@@ -9,6 +9,18 @@ public partial class TextBox : RichTextLabel
 	[Export] public Vector2I resolution; // Bloquear negativos
 	[Export] public string baseChar = ".";
 	[Export] public int FrameRate = 15;
+	private int _textSize = 10;
+	[Export] public int TextSize {
+		get => _textSize;
+		set
+		{
+			if(value > 1){
+				_textSize = value;
+				UpdateTextObjects();
+			}
+		}
+	} 
+	// Adicionar Seter
 	public List<TextObject> _textObjects;
 	private double _timeSinceLastUpdate = 0;
 	[Export] public bool testing
@@ -17,7 +29,7 @@ public partial class TextBox : RichTextLabel
 		set => UpdateTextObjects();
 	}
 
-	private string[] _screenLines;
+	protected string[] _screenLines;
 	
 	public override void _Ready()
 	{
@@ -35,14 +47,16 @@ public partial class TextBox : RichTextLabel
 		
 		ClearScreenLines();
 		
+		//GD.Print($"Text Object Count: {_textObjects.Count}");
 		foreach (TextObject textObject in _textObjects)
 		{
+			//GD.Print($"Obj: {textObject.Name}");
 			for (int j = 0; j < textObject.Sprite.Length; j++)
 			{
 				int line = textObject.ObjectPosition.Y + j;
 				if (line >= resolution.Y || line < 0) continue;
 				
-				GD.Print($" Screen: {_screenLines.Length} - Pos: {line}");
+				//GD.Print($" Screen: {_screenLines.Length} - Pos: {line}");
 				
 				char[] temp = _screenLines[line].ToCharArray();
 				
@@ -50,7 +64,7 @@ public partial class TextBox : RichTextLabel
 				{
 					int coord = i + textObject.ObjectPosition.X;
 				
-					if(coord >= resolution.X || coord < 0) continue;
+					if(coord >= resolution.X || coord < 0 || textObject.Sprite[j][i] == '£') continue;
 					temp[coord] = textObject.Sprite[j][i];
 				}
 				
@@ -59,12 +73,14 @@ public partial class TextBox : RichTextLabel
 		}
 		
 		Text = String.Empty;
-		GD.Print(_screenLines.Length);
+		//GD.Print(_screenLines.Length);
 		foreach (string Line in _screenLines)
 		{
 			Text += Line + "\n";
 		}
-		GD.Print(_screenLines.Length);
+		
+		Text = $"[font_size={TextSize}]" + Text + "[/font_size]";
+		//GD.Print(_screenLines.Length);
 	}
 
 	private void ClearScreenLines()
@@ -78,9 +94,12 @@ public partial class TextBox : RichTextLabel
 		}
 	}
 	
-	private void UpdateTextObjects()
+	protected void UpdateTextObjects()
 	{
 		_textObjects = GetChilds<TextObject>();
+
+		if (_textObjects.Count == 0) return;
+			
 		foreach (var to in _textObjects)
 		{
 			to.TextObjectChanged += UpdateBox;

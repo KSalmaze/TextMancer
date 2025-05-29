@@ -6,14 +6,13 @@ using System.Text.Json;
 public partial class TextObject : Control, IComparable<TextObject>
 {
     [Signal] public delegate void TextObjectChangedEventHandler();
-    
-    [ExportGroup("Transform")]
     [Export] public bool testing
     {
         get => false;
         set => AcessJson();
     }
     
+    [ExportGroup("Transform")]
     private Vector2I _position;
 
     [Export]
@@ -50,6 +49,9 @@ public partial class TextObject : Control, IComparable<TextObject>
     
     [Export] public int Layer;
     
+    [ExportGroup("Collision")]
+    [Export(PropertyHint.File, "*.json")] public string CollisionJsonFilePath; 
+    
     public override void _Ready()
     {
     }
@@ -84,6 +86,8 @@ public partial class TextObject : Control, IComparable<TextObject>
             counter++;
         }
     }
+    
+    // Interfaces
     public int CompareTo(TextObject obj)
     {
         return Layer.CompareTo(obj.Layer);
