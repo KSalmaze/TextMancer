@@ -45,7 +45,20 @@ public partial class TextObject : Control, IComparable<TextObject>
         }
     }
     
-    [Export(PropertyHint.File, "*.json")] public string JsonFilePath;
+    private string _jsonFilePath;
+
+    [Export(PropertyHint.File, "*.json")] 
+    public string JsonFilePath 
+    { 
+        get => _jsonFilePath;
+        set 
+        {
+            _jsonFilePath = value;
+            
+            AcessJson();
+        }
+    }
+
     
     [Export] public int Layer;
     
@@ -54,6 +67,7 @@ public partial class TextObject : Control, IComparable<TextObject>
     
     public override void _Ready()
     {
+        AcessJson();
     }
 
     public bool VerifyPosition()
@@ -63,6 +77,7 @@ public partial class TextObject : Control, IComparable<TextObject>
     
     public void AcessJson()
     {
+        GD.Print("AcessJson");
         var file = FileAccess.Open(JsonFilePath, FileAccess.ModeFlags.Read);
 
         if (file == null)

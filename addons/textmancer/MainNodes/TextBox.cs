@@ -33,7 +33,7 @@ public partial class TextBox : RichTextLabel
 	
 	public override void _Ready()
 	{
-		resolution = new Vector2I(100, 25);
+		UpdateTextObjects();
 	}
 	
 	public override void _Process(double delta)
@@ -59,13 +59,21 @@ public partial class TextBox : RichTextLabel
 				//GD.Print($" Screen: {_screenLines.Length} - Pos: {line}");
 				
 				char[] temp = _screenLines[line].ToCharArray();
-				
+
+				if (textObject.Sprite[j] == null) continue;
 				for(int i = 0; i < textObject.Sprite[j].Length; i++)
 				{
 					int coord = i + textObject.ObjectPosition.X;
 				
-					if(coord >= resolution.X || coord < 0 || textObject.Sprite[j][i] == '£') continue;
-					temp[coord] = textObject.Sprite[j][i];
+					if(coord >= resolution.X || coord < 0 || textObject.Sprite[j][i] == ' ') continue;
+					if (textObject.Sprite[j][i] == '£')
+					{
+						temp[coord] = ' ';
+					}
+					else
+					{
+						temp[coord] = textObject.Sprite[j][i];
+					}
 				}
 				
 				_screenLines[line] = new string(temp);
