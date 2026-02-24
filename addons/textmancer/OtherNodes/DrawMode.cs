@@ -59,12 +59,6 @@ public partial class DrawMode: TextObject
 			GD.Print($"Iteraction {i}");
 			Sprite[i] = (string)_fullSprite[i].Clone();
 			
-			GD.Print("Sprite:  ");
-			foreach (string a in Sprite)
-			{
-				GD.Print(a);
-			}
-			
 			EmitSignal(TextObject.SignalName.TextObjectChanged);
 			i++;
 			await ToSignal(GetTree().CreateTimer(tickTime), SceneTreeTimer.SignalName.Timeout);

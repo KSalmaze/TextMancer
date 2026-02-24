@@ -29,12 +29,24 @@ public partial class TextObject : Control, IComparable<TextObject>
         }
     }
 
+    [Export] public Vector2I GlobalObjectPosition;
+
+    public override void _ValidateProperty(Godot.Collections.Dictionary property)
+    {
+        if (property["name"].AsStringName() == PropertyName.GlobalObjectPosition)
+        {
+            var usage = property["usage"].As<PropertyUsageFlags>() | PropertyUsageFlags.ReadOnly;
+            property["usage"] = (int)usage;
+        }
+    }
+
 
     [ExportGroup("Sprite")] 
     
     private string _sprite;
 
     public string[] Sprite;
+    [Export] private bool SolidSpaces;
     [Export] private string SpritePreview
     {
         get => _sprite;

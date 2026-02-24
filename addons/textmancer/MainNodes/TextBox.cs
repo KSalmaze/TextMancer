@@ -31,6 +31,24 @@ public partial class TextBox : RichTextLabel
 
 	protected string[] _screenLines;
 	
+	// OPTIMIZATION UPDATE
+
+	public Dictionary<int, List<TextObject>> TextObjects; // Dicionário : Linha -> sprites nesse linha
+	// Dicinionário : Layer -> Dicionário : Linha -> sprites nessa linha e layer
+	
+	/*
+	 *Nova função:
+	 *
+	 * -- Verificar quais linhas atualizar
+	 * -- Para cada linhas necessária a atualização
+	 *		-- Acessar as sprites nas linhas
+	 *      -- Acessar apenas a linhas global necessária e atualizar a _screenLines certa
+	 *
+	 * -- Atualizar a tela
+	 */
+	
+	// OPTIMIZATION UPDATE
+	
 	public override void _Ready()
 	{
 		UpdateTextObjects();
