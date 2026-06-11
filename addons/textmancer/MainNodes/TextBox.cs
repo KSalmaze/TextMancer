@@ -148,7 +148,27 @@ public partial class TextBox : RichTextLabel
 	// Uma função tão sensivel ser Public?
 	public void NewUpdateBox()
 	{
-		// Apenas para escrita
+		// Apenas para faciliar escrita da estrutura
+		Dictionary<int, List<TextObject>> linhaParaSprites = new Dictionary<int, List<TextObject>>(); // Lista deve estar ordenada por layer
+		List<int> linhasSujas =  new List<int>();
+
+
+		foreach (int line in linhasSujas)
+		{
+			// Clear string builder line
+			_screenLinesBuilder[line].Clear();
+			// Talvez seja necessário adicionar resolucao.x espaços em branco
+
+			foreach(TextObject textObject in linhaParaSprites[line])
+			{
+				foreach (char car in textObject.Sprite[line - textObject.GlobalObjectPosition.Y])
+				{
+					//_screenLinesBuilder[line][]
+				}
+			}
+		}
+
+
 	}
 
 	private void ClearScreenLines()
