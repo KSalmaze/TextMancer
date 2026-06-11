@@ -10,6 +10,7 @@
 using System;
 using Godot;
 using System.Collections.Generic;
+using System.Text;
 
 
 [Tool]
@@ -54,6 +55,10 @@ public partial class TextBox : RichTextLabel
 	 *      -- Acessar apenas a linhas global necessária e atualizar a _screenLines certa
 	 *
 	 * -- Atualizar a tela
+
+	  MAIS IDEIAS:
+	  - Criar antes do processamento os sb
+	  - Estrutura de dados onde multiplas chaves apontem para o mesmo objeto, para salvar posição X,Y -> Sprites
 	 */
 	
 	// OPTIMIZATION UPDATE
@@ -75,11 +80,18 @@ public partial class TextBox : RichTextLabel
 		ClearScreenLines();
 		
 		//GD.Print($"Text Object Count: {_textObjects.Count}");
+		// Para cada objeto
 		foreach (TextObject textObject in _textObjects)
 		{
+			// criar stringBuilder para cada linha da tela e ir atualizando as mesmo conforme necessário
+			// Provavelmente deixará o código mais rápido
+			// Usar lazy ou o conceito de lazy para criar apenas StringBuilders para linha que precisam
+
 			//GD.Print($"Obj: {textObject.Name}");
+			// Para cada linha na sprite do objeto
 			for (int j = 0; j < textObject.Sprite.Length; j++)
 			{
+				// Verificando se a linha esta dentro ou fora da tela
 				int line = textObject.ObjectPosition.Y + j;
 				if (line >= resolution.Y || line < 0) continue;
 				
@@ -87,6 +99,8 @@ public partial class TextBox : RichTextLabel
 				
 				char[] temp = _screenLines[line].ToCharArray();
 
+				// Acho que essa verificação pode ser passada para cima
+				// Possivelmente parar todo o loop e ir para a próxima Sprite
 				if (textObject.Sprite[j] == null) continue;
 				for(int i = 0; i < textObject.Sprite[j].Length; i++)
 				{
@@ -107,14 +121,16 @@ public partial class TextBox : RichTextLabel
 			}
 		}
 		
+		// Otimizar com String Builder
 		Text = String.Empty;
+		StringBuilder screen_sb = new StringBuilder();
 		//GD.Print(_screenLines.Length);
 		foreach (string Line in _screenLines)
 		{
-			Text += Line + "\n";
+			screen_sb.Append(Line + "\n");
 		}
 		
-		Text = $"[font_size={TextSize}]" + Text + "[/font_size]";
+		Text = $"[font_size={TextSize}]" + screen_sb + "[/font_size]";
 		//GD.Print(_screenLines.Length);
 	}
 
