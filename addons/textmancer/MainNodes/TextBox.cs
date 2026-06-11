@@ -91,22 +91,23 @@ public partial class TextBox : RichTextLabel
 			// Para cada linha na sprite do objeto
 			for (int j = 0; j < textObject.Sprite.Length; j++)
 			{
-				// Verificando se a linha esta dentro ou fora da tela
+				// Passando para a próxima linha caso a linha estiver vazia
+				if (textObject.Sprite[j] == null) continue;
+
 				int line = textObject.ObjectPosition.Y + j;
-				if (line >= resolution.Y || line < 0) continue;
+				if (line < 0) continue; // Caso a linha esteja a cima da tela, (Quando calcularmos as linhas sujas, isso vai sumir)
+				if (line >= resolution.Y) break; // Caso a linha atual esteja abaixo da tela todas as outras vão estar também
 				
 				//GD.Print($" Screen: {_screenLines.Length} - Pos: {line}");
-				
 				char[] temp = _screenLines[line].ToCharArray();
 
-				// Acho que essa verificação pode ser passada para cima
-				// Possivelmente parar todo o loop e ir para a próxima Sprite
-				if (textObject.Sprite[j] == null) continue;
+
 				for(int i = 0; i < textObject.Sprite[j].Length; i++)
 				{
 					int coord = i + textObject.ObjectPosition.X;
 				
-					if(coord >= resolution.X || coord < 0 || textObject.Sprite[j][i] == ' ') continue;
+					if(coord >= resolution.X) break;
+					if(coord < 0 || textObject.Sprite[j][i] == ' ') continue;
 					if (textObject.Sprite[j][i] == '£')
 					{
 						temp[coord] = ' ';
@@ -121,7 +122,7 @@ public partial class TextBox : RichTextLabel
 			}
 		}
 		
-		// Check if is possible to optimize this part using some method that dosent require a foreach
+		// Test performace with string screenText = string.Join('\n', _screenLines);
 		Text = String.Empty;
 		StringBuilder screen_sb = new StringBuilder();
 		//GD.Print(_screenLines.Length);
