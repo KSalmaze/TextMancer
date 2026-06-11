@@ -121,13 +121,13 @@ public partial class TextBox : RichTextLabel
 			}
 		}
 		
-		// Otimizar com String Builder
+		// Check if is possible to optimize this part using some method that dosent require a foreach
 		Text = String.Empty;
 		StringBuilder screen_sb = new StringBuilder();
 		//GD.Print(_screenLines.Length);
 		foreach (string Line in _screenLines)
 		{
-			screen_sb.Append(Line + "\n");
+			screen_sb.AppendLine(Line);
 		}
 		
 		Text = $"[font_size={TextSize}]" + screen_sb + "[/font_size]";
