@@ -41,7 +41,7 @@ public partial class TextBox : RichTextLabel
 
 	//protected string[] _screenLines;
 	//protected StringBuilder[] _screenLinesBuilder;
-	protected char[][] _screenLinesBuffer;
+	protected char[][] _screenLines;
 	protected char[] _lineCopy; // Todo: deve ser atualizado quando a resolução X é atualizada
 	
 	// OPTIMIZATION UPDATE
@@ -176,19 +176,13 @@ public partial class TextBox : RichTextLabel
 	{
 		for (int i = 0; i < resolution.Y; i++)
 		{
-			_screenLines[i] = baseLine;
+			ClearScreenLine(i);
 		}
 	}
 
 	private void ClearScreenLine(int line)
 	{
-		_screenLines = new string[resolution.Y];
-		string baseLine = new string(baseChar[0], resolution.X);
-
-		for (int i = 0; i < resolution.Y; i++)
-		{
-			_screenLines[i] = baseLine;
-		}
+		Array.Copy(_lineCopy,_screenLines[line], resolution.X);
 	}
 	
 	protected void UpdateTextObjects()
