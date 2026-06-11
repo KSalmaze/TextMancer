@@ -40,6 +40,7 @@ public partial class TextBox : RichTextLabel
 	}
 
 	protected string[] _screenLines;
+	protected StringBuilder[] _screenLinesBuilder;
 	
 	// OPTIMIZATION UPDATE
 
@@ -66,6 +67,14 @@ public partial class TextBox : RichTextLabel
 	public override void _Ready()
 	{
 		UpdateTextObjects();
+
+		// Screen StringBuilder initialization
+		_screenLinesBuilder = new StringBuilder[resolution.Y];
+
+		for (int i = 0; i < resolution.Y; i++)
+		{
+			_screenLinesBuilder[i] = new StringBuilder();
+		}
 	}
 	
 	public override void _Process(double delta)
@@ -78,6 +87,7 @@ public partial class TextBox : RichTextLabel
 		GD.Print("UpdateBox");
 		
 		ClearScreenLines();
+		ClearScreenLinesBuilder();
 		
 		//GD.Print($"Text Object Count: {_textObjects.Count}");
 		// Para cada objeto
@@ -135,6 +145,12 @@ public partial class TextBox : RichTextLabel
 		//GD.Print(_screenLines.Length);
 	}
 
+	// Uma função tão sensivel ser Public?
+	public void NewUpdateBox()
+	{
+		// Apenas para escrita
+	}
+
 	private void ClearScreenLines()
 	{
 		_screenLines = new string[resolution.Y];
@@ -143,6 +159,15 @@ public partial class TextBox : RichTextLabel
 		for (int i = 0; i < resolution.Y; i++)
 		{
 			_screenLines[i] = baseLine;
+		}
+	}
+
+	// Todo, fazer limpar apenas as linhas que vão ser alteradas
+	private void ClearScreenLinesBuilder()
+	{
+		foreach (StringBuilder sb in _screenLinesBuilder)
+		{
+			sb.Clear();
 		}
 	}
 	
