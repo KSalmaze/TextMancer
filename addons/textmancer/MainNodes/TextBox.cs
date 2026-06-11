@@ -17,7 +17,7 @@ using System.Text;
 public partial class TextBox : RichTextLabel
 {
 	[Export] public Vector2I resolution; // Bloquear negativos
-	[Export] public string baseChar = ".";
+	[Export] public char baseChar = '.';
 	[Export] public int FrameRate = 15;
 	private int _textSize = 10;
 	[Export] public int TextSize {
@@ -39,8 +39,10 @@ public partial class TextBox : RichTextLabel
 		set => UpdateTextObjects();
 	}
 
-	protected string[] _screenLines;
-	protected StringBuilder[] _screenLinesBuilder;
+	//protected string[] _screenLines;
+	//protected StringBuilder[] _screenLinesBuilder;
+	protected char[][] _screenLinesBuffer;
+	protected char[] _lineCopy; // Todo: deve ser atualizado quando a resolução X é atualizada
 	
 	// OPTIMIZATION UPDATE
 
@@ -68,13 +70,9 @@ public partial class TextBox : RichTextLabel
 	{
 		UpdateTextObjects();
 
-		// Screen StringBuilder initialization
-		_screenLinesBuilder = new StringBuilder[resolution.Y];
-
-		for (int i = 0; i < resolution.Y; i++)
-		{
-			_screenLinesBuilder[i] = new StringBuilder();
-		}
+		// _lineCopy initialization
+		_lineCopy = new string(baseChar, resolution.X).ToCharArray();
+		
 	}
 	
 	public override void _Process(double delta)
@@ -87,7 +85,6 @@ public partial class TextBox : RichTextLabel
 		GD.Print("UpdateBox");
 		
 		ClearScreenLines();
-		ClearScreenLinesBuilder();
 		
 		//GD.Print($"Text Object Count: {_textObjects.Count}");
 		// Para cada objeto
@@ -148,6 +145,8 @@ public partial class TextBox : RichTextLabel
 	// Uma função tão sensivel ser Public?
 	public void NewUpdateBox()
 	{
+		ClearScreenLines();
+
 		// Apenas para faciliar escrita da estrutura
 		Dictionary<int, List<TextObject>> linhaParaSprites = new Dictionary<int, List<TextObject>>(); // Lista deve estar ordenada por layer
 		List<int> linhasSujas =  new List<int>();
@@ -161,9 +160,11 @@ public partial class TextBox : RichTextLabel
 
 			foreach(TextObject textObject in linhaParaSprites[line])
 			{
-				foreach (char car in textObject.Sprite[line - textObject.GlobalObjectPosition.Y])
+				string spriteLine = textObject.Sprite[line - textObject.GlobalObjectPosition.Y];
+				for (int i = 0; i < spriteLine.Length; i++)
 				{
-					//_screenLinesBuilder[line][]
+					if(textObject.GlobalObjectPosition.X + i > resolution.X) break;
+					_screenLinesBuffer[line][i] = spriteLine[i];
 				}
 			}
 		}
@@ -171,7 +172,15 @@ public partial class TextBox : RichTextLabel
 
 	}
 
-	private void ClearScreenLines()
+	private void ClearScreen()
+	{
+		for (int i = 0; i < resolution.Y; i++)
+		{
+			_screenLines[i] = baseLine;
+		}
+	}
+
+	private void ClearScreenLine(int line)
 	{
 		_screenLines = new string[resolution.Y];
 		string baseLine = new string(baseChar[0], resolution.X);
@@ -179,15 +188,6 @@ public partial class TextBox : RichTextLabel
 		for (int i = 0; i < resolution.Y; i++)
 		{
 			_screenLines[i] = baseLine;
-		}
-	}
-
-	// Todo, fazer limpar apenas as linhas que vão ser alteradas
-	private void ClearScreenLinesBuilder()
-	{
-		foreach (StringBuilder sb in _screenLinesBuilder)
-		{
-			sb.Clear();
 		}
 	}
 	
