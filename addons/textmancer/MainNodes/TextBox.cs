@@ -43,10 +43,13 @@ public partial class TextBox : RichTextLabel
 	//protected StringBuilder[] _screenLinesBuilder;
 	protected char[][] _screenLines;
 	protected char[] _lineCopy; // Todo: deve ser atualizado quando a resolução X é atualizada
+
+	private Dictionary<int, List<TextObject>> linhaParaSprites = new Dictionary<int, List<TextObject>>(); // Lista deve estar ordenada por layer
+	private List<int> dirtyLines =  new List<int>();
 	
 	// OPTIMIZATION UPDATE
 
-	public Dictionary<int, List<TextObject>> TextObjects; // Dicionário : Linha -> sprites nesse linha
+	//public Dictionary<int, List<TextObject>> TextObjects; // Dicionário : Linha -> sprites nesse linha
 	// Dicinionário : Layer -> Dicionário : Linha -> sprites nessa linha e layer
 	
 	/*
@@ -72,7 +75,6 @@ public partial class TextBox : RichTextLabel
 
 		// _lineCopy initialization
 		_lineCopy = new string(baseChar, resolution.X).ToCharArray();
-		
 	}
 	
 	public override void _Process(double delta)
@@ -145,31 +147,22 @@ public partial class TextBox : RichTextLabel
 	// Uma função tão sensivel ser Public?
 	public void NewUpdateBox()
 	{
-		ClearScreenLines();
-
-		// Apenas para faciliar escrita da estrutura
-		Dictionary<int, List<TextObject>> linhaParaSprites = new Dictionary<int, List<TextObject>>(); // Lista deve estar ordenada por layer
-		List<int> linhasSujas =  new List<int>();
-
-
-		foreach (int line in linhasSujas)
+		foreach (int line in dirtyLines)
 		{
-			// Clear string builder line
-			_screenLinesBuilder[line].Clear();
-			// Talvez seja necessário adicionar resolucao.x espaços em branco
+			ClearScreenLine(line);
 
 			foreach(TextObject textObject in linhaParaSprites[line])
 			{
 				string spriteLine = textObject.Sprite[line - textObject.GlobalObjectPosition.Y];
-				for (int i = 0; i < spriteLine.Length; i++)
+				for (int i = 0; i < spriteLine.Length - 1; i++)
 				{
 					if(textObject.GlobalObjectPosition.X + i > resolution.X) break;
-					_screenLinesBuffer[line][i] = spriteLine[i];
+					_screenLines[line][i] = spriteLine[i];
 				}
 			}
 		}
 
-
+		dirtyLines.Clear();
 	}
 
 	private void ClearScreen()
@@ -197,8 +190,57 @@ public partial class TextBox : RichTextLabel
 		}
 		GD.Print(_textObjects.Count);
 		_textObjects.Sort();
-		UpdateBox();
+		UpdateBox();// vai mudar pra textObjectChanged
 	}
+
+	protected void OnTextObjectChanged(int oldGlobalPositionY, TextObject textObject)
+	{
+		int spriteHeight = textObject.Sprite.Length;
+
+		int oldStart = oldGlobalPositionY;
+		int oldEnd = oldGlobalPositionY + spriteHeight - 1;
+		int newStart = textObject.ObjectPosition.Y;
+		int newEnd = newStart + spriteHeight - 1;
+
+		// Range A: oldGlobalPositionY e oldGlobalPositionY + textObject.Sprite.Lenght
+		// Range B: textObject.GlobalObjectPosition.Y e textObject.GlobalObjectPosition.Y + textObject.Sprite.Lenght
+
+		// Set lines as dirt
+		// tudo no Range A
+		// tudo no Range B
+
+		// Update line to sprites dictionary;
+		// para o Range A: Dict<i>.Remove(textObject);
+		// para o Range B: Dict<i>.Add(textObject); 
+	}
+	/*
+	METHOD TextObjectChanged(oldGlobalPositionY, textObject)
+    h = textObject.Sprite.Length
+    newY = textObject.GlobalObjectPosition.Y
+
+    oldStart = oldGlobalPositionY
+    oldEnd   = oldGlobalPositionY + h - 1
+
+    newStart = newY
+    newEnd   = newY + h - 1
+
+    MarkRangeDirty(min(oldStart, newStart), max(oldEnd, newEnd))
+
+    overlapStart = max(oldStart, newStart)
+    overlapEnd   = min(oldEnd, newEnd)
+
+    IF oldStart < overlapStart
+        RemoveObjectFromRange(oldStart, overlapStart - 1, textObject)
+
+    IF overlapEnd < oldEnd
+        RemoveObjectFromRange(overlapEnd + 1, oldEnd, textObject)
+
+    IF newStart < overlapStart
+        AddObjectToRange(newStart, overlapStart - 1, textObject)
+
+    IF overlapEnd < newEnd
+        AddObjectToRange(overlapEnd + 1, newEnd, textObject)
+	*/
 	
 	public List<T> GetChilds<T>()
 	{
