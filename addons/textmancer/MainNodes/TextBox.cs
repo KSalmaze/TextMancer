@@ -44,8 +44,12 @@ public partial class TextBox : RichTextLabel
 	protected char[][] _screenLines;
 	protected char[] _lineCopy; // Todo: deve ser atualizado quando a resolução X é atualizada
 
-	private Dictionary<int, List<TextObject>> linhaParaSprites = new Dictionary<int, List<TextObject>>(); // Lista deve estar ordenada por layer
-	private List<int> dirtyLines =  new List<int>();
+	/// <summary>
+	/// Dictionary of layer to dictionary of line to List of TextObjets that the sprite is in that line and exactly layer.
+	/// </summary>
+	private Dictionary<int, Dictionary<int, List<TextObject>>> _layerToLinesToSprite = new Dictionary<int, Dictionary<int, List<TextObject>>>();
+
+	private HashSet<int> dirtyLines =  new HashSet<int>();
 	
 	// OPTIMIZATION UPDATE
 
@@ -190,28 +194,31 @@ public partial class TextBox : RichTextLabel
 		}
 		GD.Print(_textObjects.Count);
 		_textObjects.Sort();
-		UpdateBox();// vai mudar pra textObjectChanged
+		UpdateBox();// vai mudar pra OnTextObjectChanged
 	}
 
-	protected void OnTextObjectChanged(int oldGlobalPositionY, TextObject textObject)
+	protected void OnTextObjectPositionChanged(int oldGlobalPositionY, TextObject textObject)
 	{
+		// Todo: quando a sprite nova mudar a quantidade de linhas, enviar também a quantidade de linhas antiga?
+		// Dois sinais diferentes devem funcionr melhor, mais sinal em caso de mudança de layer
 		int spriteHeight = textObject.Sprite.Length;
 
 		int oldStart = oldGlobalPositionY;
 		int oldEnd = oldGlobalPositionY + spriteHeight - 1;
 		int newStart = textObject.ObjectPosition.Y;
 		int newEnd = newStart + spriteHeight - 1;
+	
+		// Mark range as dirty and updating 
+		for (int i = oldStart; i < oldEnd; i++){
+			dirtyLines.Add(i);
+			_layerToLinesToSprite[textObject.Layer][i].Remove(textObject);
+		}
+		for (int i = newStart; i < newEnd; i++){
+			dirtyLines.Add(i);
+			_layerToLinesToSprite[textObject.Layer][i].Add(textObject);
+		}
 
-		// Range A: oldGlobalPositionY e oldGlobalPositionY + textObject.Sprite.Lenght
-		// Range B: textObject.GlobalObjectPosition.Y e textObject.GlobalObjectPosition.Y + textObject.Sprite.Lenght
-
-		// Set lines as dirt
-		// tudo no Range A
-		// tudo no Range B
-
-		// Update line to sprites dictionary;
-		// para o Range A: Dict<i>.Remove(textObject);
-		// para o Range B: Dict<i>.Add(textObject); 
+		NewUpdateBox();
 	}
 	/*
 	METHOD TextObjectChanged(oldGlobalPositionY, textObject)
