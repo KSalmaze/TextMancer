@@ -14,7 +14,7 @@ using System.Text.Json;
 [Tool]
 public partial class TextObject : Control, IComparable<TextObject>
 {
-    [Signal] public delegate void TextObjectChangedEventHandler();
+    [Signal] public delegate void OnTextObjectChangedPositionEventHandler(int oldYPosition, TextObject thisObj);
     [Export] public bool testing
     {
         get => false;
@@ -32,8 +32,9 @@ public partial class TextObject : Control, IComparable<TextObject>
         {
             if (VerifyPosition())
             {
+                Vector2I oldposition = _position;
                 _position = value;
-                EmitSignal(SignalName.TextObjectChanged);
+                EmitSignal(SignalName.OnTextObjectChangedPosition, oldposition.Y, this);
             }
         }
     }

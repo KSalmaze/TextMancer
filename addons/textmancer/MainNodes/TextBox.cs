@@ -182,6 +182,9 @@ public partial class TextBox : RichTextLabel
 		Array.Copy(_lineCopy,_screenLines[line], resolution.X);
 	}
 	
+	
+	// Functions related to update of TextObjects
+
 	protected void UpdateTextObjects()
 	{
 		_textObjects = GetChilds<TextObject>();
@@ -190,7 +193,7 @@ public partial class TextBox : RichTextLabel
 			
 		foreach (var to in _textObjects)
 		{
-			to.TextObjectChanged += UpdateBox;
+			to.OnTextObjectChangedPosition += OnTextObjectPositionChanged;
 		}
 		GD.Print(_textObjects.Count);
 		_textObjects.Sort();
@@ -210,7 +213,7 @@ public partial class TextBox : RichTextLabel
 	
 		MarkDirtyUnion(oldStart, oldEnd, newStart, newEnd);
 
-		// Mark range as dirty and updating 
+		// Updating objects 
 		for (int i = oldStart; i < oldEnd; i++){
 			_layerToLinesToSprite[textObject.Layer][i].Remove(textObject);
 		}
@@ -234,34 +237,6 @@ public partial class TextBox : RichTextLabel
 			dirtyLines.Add(y);
 		}
 	}
-	/*
-	METHOD TextObjectChanged(oldGlobalPositionY, textObject)
-    h = textObject.Sprite.Length
-    newY = textObject.GlobalObjectPosition.Y
-
-    oldStart = oldGlobalPositionY
-    oldEnd   = oldGlobalPositionY + h - 1
-
-    newStart = newY
-    newEnd   = newY + h - 1
-
-    MarkRangeDirty(min(oldStart, newStart), max(oldEnd, newEnd))
-
-    overlapStart = max(oldStart, newStart)
-    overlapEnd   = min(oldEnd, newEnd)
-
-    IF oldStart < overlapStart
-        RemoveObjectFromRange(oldStart, overlapStart - 1, textObject)
-
-    IF overlapEnd < oldEnd
-        RemoveObjectFromRange(overlapEnd + 1, oldEnd, textObject)
-
-    IF newStart < overlapStart
-        AddObjectToRange(newStart, overlapStart - 1, textObject)
-
-    IF overlapEnd < newEnd
-        AddObjectToRange(overlapEnd + 1, newEnd, textObject)
-	*/
 	
 	public List<T> GetChilds<T>()
 	{
