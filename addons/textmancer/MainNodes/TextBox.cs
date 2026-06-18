@@ -208,17 +208,31 @@ public partial class TextBox : RichTextLabel
 		int newStart = textObject.ObjectPosition.Y;
 		int newEnd = newStart + spriteHeight - 1;
 	
+		MarkDirtyUnion(oldStart, oldEnd, newStart, newEnd);
+
 		// Mark range as dirty and updating 
 		for (int i = oldStart; i < oldEnd; i++){
-			dirtyLines.Add(i);
 			_layerToLinesToSprite[textObject.Layer][i].Remove(textObject);
 		}
 		for (int i = newStart; i < newEnd; i++){
-			dirtyLines.Add(i);
 			_layerToLinesToSprite[textObject.Layer][i].Add(textObject);
 		}
 
 		NewUpdateBox();
+	}
+
+	private void MarkDirtyUnion(int oldStart, int oldEnd, int newStart, int newEnd)
+	{
+		int start = Math.Min(oldStart, newStart);
+		int end = Math.Max(oldEnd, newEnd);
+
+		int clampedStart = Math.Max(0, start);
+		int clampedEnd = Math.Min(resolution.Y - 1, end);
+
+		for (int y = clampedStart; y <= clampedEnd; y++)
+		{
+			dirtyLines.Add(y);
+		}
 	}
 	/*
 	METHOD TextObjectChanged(oldGlobalPositionY, textObject)
