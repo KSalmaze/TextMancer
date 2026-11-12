@@ -31,9 +31,9 @@ public partial class DrawMode: TextObject
 		GD.Print("DrawMode");
 	
 		// Conectar para testar
-		if (HasSignal(TextObject.SignalName.TextObjectChanged))
+		if (HasSignal(TextObject.SignalName.OnTextObjectChangedPosition))
 		{
-			Connect(TextObject.SignalName.TextObjectChanged, Callable.From(() => GD.Print("Signal emitido!")));
+			Connect(TextObject.SignalName.OnTextObjectChangedPosition, Callable.From(() => GD.Print("Signal emitido!")));
 		}
 		
 		base._Ready();
@@ -41,7 +41,7 @@ public partial class DrawMode: TextObject
 			GD.Print("No EditorHint");
 			_fullSprite = (string[])Sprite.Clone();
 			Array.Clear(Sprite);
-			EmitSignal(TextObject.SignalName.TextObjectChanged);
+			EmitSignal(TextObject.SignalName.OnTextObjectChangedPosition);
 			Draw();
 		}
 	}
@@ -68,7 +68,7 @@ public partial class DrawMode: TextObject
 			GD.Print($"Iteraction {i}");
 			Sprite[i] = (string)_fullSprite[i].Clone();
 			
-			EmitSignal(TextObject.SignalName.TextObjectChanged);
+			EmitSignal(TextObject.SignalName.OnTextObjectChangedPosition);
 			i++;
 			await ToSignal(GetTree().CreateTimer(tickTime), SceneTreeTimer.SignalName.Timeout);
 		}

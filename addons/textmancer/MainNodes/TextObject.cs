@@ -39,7 +39,7 @@ public partial class TextObject : Control, IComparable<TextObject>
         }
     }
 
-    [Export] public Vector2I GlobalObjectPosition;
+    /*[Export] public Vector2I GlobalObjectPosition;
 
     public override void _ValidateProperty(Godot.Collections.Dictionary property)
     {
@@ -48,7 +48,7 @@ public partial class TextObject : Control, IComparable<TextObject>
             var usage = property["usage"].As<PropertyUsageFlags>() | PropertyUsageFlags.ReadOnly;
             property["usage"] = (int)usage;
         }
-    }
+    }*/
 
 
     [ExportGroup("Sprite")] 
@@ -63,7 +63,7 @@ public partial class TextObject : Control, IComparable<TextObject>
         set
         {
             _sprite = value;
-            EmitSignal(SignalName.TextObjectChanged);
+            //EmitSignal(SignalName.TextObjectChanged);
         }
     }
     

@@ -39,6 +39,8 @@ public partial class TextBox : RichTextLabel
 		set => UpdateTextObjects();
 	}
 
+	[Export] public char emptySpaceChar = '◙';
+
 	//protected string[] _screenLines;
 	//protected StringBuilder[] _screenLinesBuilder;
 	protected char[][] _screenLines;
@@ -85,71 +87,7 @@ public partial class TextBox : RichTextLabel
 	{
 	}
 	
-	public void UpdateBox()
-	{
-		//resolution = new Vector2I(100, 25);
-		GD.Print("UpdateBox");
-		
-		ClearScreenLines();
-		
-		//GD.Print($"Text Object Count: {_textObjects.Count}");
-		// Para cada objeto
-		foreach (TextObject textObject in _textObjects)
-		{
-			// criar stringBuilder para cada linha da tela e ir atualizando as mesmo conforme necessário
-			// Provavelmente deixará o código mais rápido
-			// Usar lazy ou o conceito de lazy para criar apenas StringBuilders para linha que precisam
-
-			//GD.Print($"Obj: {textObject.Name}");
-			// Para cada linha na sprite do objeto
-			for (int j = 0; j < textObject.Sprite.Length; j++)
-			{
-				// Passando para a próxima linha caso a linha estiver vazia
-				if (textObject.Sprite[j] == null) continue;
-
-				int line = textObject.ObjectPosition.Y + j;
-				if (line < 0) continue; // Caso a linha esteja a cima da tela, (Quando calcularmos as linhas sujas, isso vai sumir)
-				if (line >= resolution.Y) break; // Caso a linha atual esteja abaixo da tela todas as outras vão estar também
-				
-				//GD.Print($" Screen: {_screenLines.Length} - Pos: {line}");
-				char[] temp = _screenLines[line].ToCharArray();
-
-
-				for(int i = 0; i < textObject.Sprite[j].Length; i++)
-				{
-					int coord = i + textObject.ObjectPosition.X;
-				
-					if(coord >= resolution.X) break;
-					if(coord < 0 || textObject.Sprite[j][i] == ' ') continue;
-					if (textObject.Sprite[j][i] == '£')
-					{
-						temp[coord] = ' ';
-					}
-					else
-					{
-						temp[coord] = textObject.Sprite[j][i];
-					}
-				}
-				
-				_screenLines[line] = new string(temp);
-			}
-		}
-		
-		// Test performace with string screenText = string.Join('\n', _screenLines);
-		Text = String.Empty;
-		StringBuilder screen_sb = new StringBuilder();
-		//GD.Print(_screenLines.Length);
-		foreach (string Line in _screenLines)
-		{
-			screen_sb.AppendLine(Line);
-		}
-		
-		Text = $"[font_size={TextSize}]" + screen_sb + "[/font_size]";
-		//GD.Print(_screenLines.Length);
-	}
-
-	// Uma função tão sensivel ser Public?
-	public void NewUpdateBox()
+	private void NewUpdateBox()
 	{
 		foreach (int line in dirtyLines)
 		{
@@ -157,11 +95,12 @@ public partial class TextBox : RichTextLabel
 
 			foreach(TextObject textObject in linhaParaSprites[line])
 			{
-				string spriteLine = textObject.Sprite[line - textObject.GlobalObjectPosition.Y];
-				for (int i = 0; i < spriteLine.Length - 1; i++)
+				string spriteLine = textObject.Sprite[line - textObject.ObjectPosition.Y];
+				for (int i = 0; i < spriteLine.Length; i++)
 				{
-					if(textObject.GlobalObjectPosition.X + i > resolution.X) break;
-					_screenLines[line][i] = spriteLine[i];
+					if(textObject.ObjectPosition.X + i > resolution.X) break;
+					if (spriteLine[i] == emptySpaceChar) continue;
+					_screenLines[line][textObject.ObjectPosition.X + i] = spriteLine[i];
 				}
 			}
 		}
@@ -182,6 +121,7 @@ public partial class TextBox : RichTextLabel
 		Array.Copy(_lineCopy,_screenLines[line], resolution.X);
 	}
 	
+	// Sempre que um TextObject vou incluido ou removido chamar essa função
 	
 	// Functions related to update of TextObjects
 
@@ -193,11 +133,12 @@ public partial class TextBox : RichTextLabel
 			
 		foreach (var to in _textObjects)
 		{
+			to.OnTextObjectChangedPosition -= OnTextObjectPositionChanged;
 			to.OnTextObjectChangedPosition += OnTextObjectPositionChanged;
 		}
 		GD.Print(_textObjects.Count);
 		_textObjects.Sort();
-		UpdateBox();// vai mudar pra OnTextObjectChanged
+		NewUpdateBox(); // É necessário
 	}
 
 	protected void OnTextObjectPositionChanged(int oldGlobalPositionY, TextObject textObject)
@@ -211,33 +152,52 @@ public partial class TextBox : RichTextLabel
 		int newStart = textObject.ObjectPosition.Y;
 		int newEnd = newStart + spriteHeight - 1;
 	
-		MarkDirtyUnion(oldStart, oldEnd, newStart, newEnd);
-
-		// Updating objects 
-		for (int i = oldStart; i < oldEnd; i++){
+		// Mark range as dirty and updating 
+		for (int i = oldStart; i <= oldEnd; i++){
+			dirtyLines.Add(i);
 			_layerToLinesToSprite[textObject.Layer][i].Remove(textObject);
 		}
-		for (int i = newStart; i < newEnd; i++){
+		for (int i = newStart; i <= newEnd; i++){
+			dirtyLines.Add(i);
 			_layerToLinesToSprite[textObject.Layer][i].Add(textObject);
 		}
 
 		NewUpdateBox();
 	}
+	/*
+	METHOD TextObjectChanged(oldGlobalPositionY, textObject)
+    h = textObject.Sprite.Length
+    newY = textObject.GlobalObjectPosition.Y
 
-	private void MarkDirtyUnion(int oldStart, int oldEnd, int newStart, int newEnd)
-	{
-		int start = Math.Min(oldStart, newStart);
-		int end = Math.Max(oldEnd, newEnd);
+    oldStart = oldGlobalPositionY
+    oldEnd   = oldGlobalPositionY + h - 1
 
-		int clampedStart = Math.Max(0, start);
-		int clampedEnd = Math.Min(resolution.Y - 1, end);
+    newStart = newY
+    newEnd   = newY + h - 1
 
-		for (int y = clampedStart; y <= clampedEnd; y++)
-		{
-			dirtyLines.Add(y);
-		}
-	}
+    MarkRangeDirty(min(oldStart, newStart), max(oldEnd, newEnd))
+
+    overlapStart = max(oldStart, newStart)
+    overlapEnd   = min(oldEnd, newEnd)
+
+    IF oldStart < overlapStart
+        RemoveObjectFromRange(oldStart, overlapStart - 1, textObject)
+
+    IF overlapEnd < oldEnd
+        RemoveObjectFromRange(overlapEnd + 1, oldEnd, textObject)
+
+    IF newStart < overlapStart
+        AddObjectToRange(newStart, overlapStart - 1, textObject)
+
+    IF overlapEnd < newEnd
+        AddObjectToRange(overlapEnd + 1, newEnd, textObject)
+	*/
 	
+	/// <summary>
+	/// Retorna uma lista com todos os filhos do tipo T
+	/// </summary>
+	/// <typeparam name="T">Tipo de busca</typeparam>
+	/// <returns></returns>
 	public List<T> GetChilds<T>()
 	{
 		List<T> childs = new List<T>();

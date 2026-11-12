@@ -15,7 +15,7 @@ namespace TextMancer.addons.textmancer.Scripts;
 [Tool]
 public partial class SpriteEditor: TextBox
 {
-	public TextObject SpriteObject;
+/*	public TextObject SpriteObject;
 	[Export] public bool testingTwo
 	{
 		get => false;
@@ -200,5 +200,5 @@ public partial class SpriteEditor: TextBox
 	}
 	
 	// Segunda parte
-	// Trocar para collider
+	// Trocar para collider*/
 }

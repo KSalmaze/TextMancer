@@ -1,9 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://dtkc7ts5nqlex"]
+[gd_scene load_steps=5 format=3 uid="uid://dtkc7ts5nqlex"]
 
 [ext_resource type="Script" uid="uid://byjf3dp53vwvi" path="res://addons/textmancer/MainNodes/Conductor.cs" id="1_d0kpp"]
 [ext_resource type="FontFile" uid="uid://daag56kvxsdf2" path="res://Fonts/SpaceMono-Regular.ttf" id="2_u3s32"]
 [ext_resource type="Script" uid="uid://cafw108hsn24b" path="res://addons/textmancer/MainNodes/TextBox.cs" id="3_ina6a"]
-[ext_resource type="Script" uid="uid://dcc6nbil6206o" path="res://addons/textmancer/MainNodes/TextObject.cs" id="4_tay7t"]
 [ext_resource type="Script" uid="uid://ogmmdxkjmk0d" path="res://addons/textmancer/OtherNodes/DrawMode.cs" id="4_u3s32"]
 
 [node name="Control" type="Control"]
@@ -29,82 +28,88 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = 96.0
-offset_bottom = 96.0
+offset_left = 128.0
+offset_top = 144.0
+offset_right = 128.0
+offset_bottom = 144.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/line_separation = -5
 theme_override_fonts/normal_font = ExtResource("2_u3s32")
 bbcode_enabled = true
-text = "[font_size=11] ______        _   _                            _       _         ,,,,,          __       _     _                   _____    
-|  ____|      | | | |                          | |     (_)         &&&          / _|     | |   | |                 / ____|   
-| |__    ___  | | | |   ___   __      __  ___  | |__    _   _ __   &&&   ___   | |_      | |_  | |__     ___      | |  __    
-|  __|  / _ \\ | | | |  / _ \\  \\ \\ /\\ / / /&__| |  _ \\  | | |  _ \\  &&&  / _ \\  |  _|     | __|&|  _ \\   / _ \\     | | |_ |  /
-| |    |  __/ | | | | | (_) |  \\ V  V /  \\_&&& | | | | | | | |_) | &&& | (_) | | |       | &&& | |,, | |  __/     | |__| | | 
-|_|     \\___| |_| |_|  \\___/    \\_/\\_/   |__&&&|_| |_| |_| | .__,,,,,,,,,___/  |_|        &&&| |_,,,,|  \\___|      \\_____|  \\
-                                             ,,,,,,,,,,    | |,,,,,,,,,.,,,       ,,,,,,,,,,   *,,,,,                        
-                                        ,,,   ,,,,,/       |_|    ,,,,,               ,,,,,,,,,,,,,,                         
-                                       ,,,,,,,,  ,,,,             ,,,,,             *,,,, ,,,,,,,,,                          
-                                        ,,,,,,     &&&            ,,,,,,           &&&    ,,,,,,,,                           
-                                          ,,,        &&&      ,,,,,,&,,,,,,      &&&     ,,,,,                               
-                                                  ,,,,,,,,,,,,,,,,&&&,,,,,,,,,,,,,,,,,,                                      
-                                                 ,,,,,,,,,,,,&&&&&&&&,,,,,,,,,,,,,,,,,,,                                     
-                                                ,,,,&&&&&&&&&&&&&&&&&,,,,,,,,,,,,,,,,,,,,                                    
-                                                ,,,,,,&&&&&&&&&&&&&&&,,,,,,,,,,,,,,,,,,,,                                    
-                                                   ,,,,,&&&&&&&&&&&&&,,,,,,,,,,,,,,,,,                                       
-                                                     ,,,,&&&&&&&&&&&&,,,,,,,,,,,,,,,                                         
-                                                      ,,,&&&&&&&&&&&&,,,,,,,,,,,,,,.                                         
-                                                     ,,,,&&&&&&&&&&&&,,,,,,,,,,,,,,,                                         
-                                                  ,,,,,,&&&&&&&&&&&&&,,,,,,,,,,,,,,,,,,                                      
-                                              ,,,,,,,&&&&&&&&&&&&&&&&,,,,,,,,,,,,,,,,,,,,,,                                  
-                                               ,,,,,,,,,,,,,,,,,,,,,,&&&&&&&&&&&&&&&&&,,,,                                   
-                                               ,,,,,,,,,,,,,,,,,,,,,,&&&&&&&&&&&&&&&&&,,,,                                   
-                                                ,,,,,,,,,,,,,,,,,,,,,&&&&&&&&&&&&&&&&,,,,                                    
-                                                 ,,,,,,,,,,,,,,,,,,,,&&&&&&&&&&&&&&&,,,,                                     
-                                                  ,,,,,,,,,,,,,,,,,,,&&&&&&&&&&&&&,,,,,                                      
-                                                    ,,,,,,,,,,,,,,,,,&&&&&&&&&&&&,,,,.                                       
-                                                     ,,,,,,,,,,,,,,,,&&&&&&&&&&,,,,,                                         
-                                    ,,,,,,          &&&,,,,,,,,,,,,,,&&&&&&&&,,,,,&&&          ,,,,,,                        
-                                  ,,,,,,,,,        &&&   ,,,,,,,,,,,,&&&&&&,,,,,   &&&        ,,,,,,,,,/                     
-                               &&&,,,,,&&,,,    &&&       ,,,,,,,,,,&&&,,,,,,       &&&    ,,,,&,,,,,,&&&                    
-                              &&&&&&,,,&&,,,,,,&&&            ,,,,,,,,,,,,,            &&&,,,,,&&&,,,&&&&&&                  
-                               &&&&&&&,,,&,,&,&,,,,             ,,,,,,,,,             ,,,,,&*&,&&,,,&&&&&&                   
-                                &&&&&&&&,,,&,&&,,,,,,,,,,,,      /,,,,      ,,,,,,,,,&&,&&&,&,,,&&&&&&&&                     
-                                 &&&&&&&& ,,,,&&,&&,,&&&,,&(,,,,,,,,,,,,,,,,,&,,,&,,,,,&,&,,,, &&&&&&&&&                     
-                                 &&&&&&&     ,,,,,,,&,&&,&&,&,&,,,,&&,&,,,,,&,&&,&,,,,,,,,,,     &&&&&&&                     
-                                &&&                ,,,,,,,,,&,,,,,,&&,&,,,,,,,,&,,,,,,                &&&                    
-                                &                               ,,,,,,,,,                               &.                   
-                              &                                     ,                                     &                  
-                                                                                                                             
-                                                                                                                             
-                                                                                                                             
-                                                                                                                             
-                                                                                                                             
-                                                                                                                             
+text = "[font_size=11]______        _   _                            _       _      ,,,,,,,,,,,,&&&&&&__,,,,,,,_,,,,,_,,,,,              _____
+  ____|      | | | |                          | |     (_)    ,,,,&&&&&&&&&&&&&&/&_|,,,,,|,|,,,|,|,,,,,            / ____
+ |__    ___  | | | |   ___   __      __  ___  | |__    _   _ __,,,,&&&&&___&&&|&|_,,,,,,|,|_,,|,|__,,,  ___      | |  __
+  __|  / _ \\ | | | |  / _ \\  \\ \\ /\\ / / / __| |  _ \\  | | |  _ \\,,,,,&&/&_&\\&&|&&_|,,,,,|,__|,|,,_,\\   / _ \\     | | |_ 
+ |    |  __/ | | | | | (_) |  \\ V  V /  \\__ \\ | | | | | | | |_) | ,,,,|&(_)&|&|&|&,,,,,,|,|_,,|,| | | |  __/     | |__| 
+_|     \\___| |_| |_|  \\___/    \\_/\\_/   |___/ |_| |_| |_| | .__/   ,,,&\\___/&&|_|&,,,,,,,\\__|,|_| |_|  \\___|      \\_____
+                                                          | |     ,,,,&&&&&&&&&&&&,,,,,,,,,,,,,,,                       
+                                                          |_|  ,,,,,,&&&&&&&&&&&&&,,,,,,,,,,,,,,,,,,                    
+                                                           ,,,,,,,&&&&&&&&&&&&&&&&,,,,,,,,,,,,,,,,,,,,,,                
+                                                            ,,,,,,,,,,,,,,,,,,,,,,&&&&&&&&&&&&&&&&&,,,,                 
+                                                            ,,,,,,,,,,,,,,,,,,,,,,&&&&&&&&&&&&&&&&&,,,,                 
+                                                             ,,,,,,,,,,,,,,,,,,,,,&&&&&&&&&&&&&&&&,,,,                  
+                                                              ,,,,,,,,,,,,,,,,,,,,&&&&&&&&&&&&&&&,,,,                   
+                                                               ,,,,,,,,,,,,,,,,,,,&&&&&&&&&&&&&,,,,,                    
+                                                                 ,,,,,,,,,,,,,,,,,&&&&&&&&&&&&,,,,.                     
+                                                                  ,,,,,,,,,,,,,,,,&&&&&&&&&&,,,,,                       
+                                                 ,,,,,,          &&&,,,,,,,,,,,,,,&&&&&&&&,,,,,&&&          ,,,,,,      
+                                               ,,,,,,,,,        &&&   ,,,,,,,,,,,,&&&&&&,,,,,   &&&        ,,,,,,,,,/   
+                                            &&&,,,,,&&,,,    &&&       ,,,,,,,,,,&&&,,,,,,       &&&    ,,,,&,,,,,,&&&  
+                                           &&&&&&,,,&&,,,,,,&&&            ,,,,,,,,,,,,,            &&&,,,,,&&&,,,&&&&&&
+                                            &&&&&&&,,,&,,&,&,,,,             ,,,,,,,,,             ,,,,,&*&,&&,,,&&&&&& 
+                                             &&&&&&&&,,,&,&&,,,,,,,,,,,,      /,,,,      ,,,,,,,,,&&,&&&,&,,,&&&&&&&&   
+                                              &&&&&&&& ,,,,&&,&&,,&&&,,&(,,,,,,,,,,,,,,,,,&,,,&,,,,,&,&,,,, &&&&&&&&&   
+                                              &&&&&&&     ,,,,,,,&,&&,&&,&,&,,,,&&,&,,,,,&,&&,&,,,,,,,,,,     &&&&&&&   
+                                             &&&                ,,,,,,,,,&,,,,,,&&,&,,,,,,,,&,,,,,,                &&&  
+                                             &                               ,,,,,,,,,                               &. 
+                                           &                                     ,                                     &
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
 [/font_size]"
 autowrap_mode = 0
 horizontal_alignment = 1
 vertical_alignment = 1
 justification_flags = 35
 script = ExtResource("3_ina6a")
-resolution = Vector2i(125, 45)
+resolution = Vector2i(120, 44)
 baseChar = " "
 TextSize = 11
 metadata/_custom_type_script = "uid://cafw108hsn24b"
-
-[node name="TextObject2" type="Control" parent="Conductor/MainTextBox"]
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-script = ExtResource("4_tay7t")
-JsonFilePath = "res://Sprites/FoG/FoGTitle.json"
-metadata/_custom_type_script = "uid://dcc6nbil6206o"
 
 [node name="TextObject" type="Control" parent="Conductor/MainTextBox"]
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
 script = ExtResource("4_u3s32")
-ObjectPosition = Vector2i(30, 0)
+ObjectPosition = Vector2i(43, -12)
+SolidSpaces = true
 JsonFilePath = "res://Sprites/FoG/Logo.json"
+Layer = 1
+metadata/_custom_type_script = "uid://dcc6nbil6206o"
+
+[node name="TextObject2" type="Control" parent="Conductor/MainTextBox"]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("4_u3s32")
+ObjectPosition = Vector2i(-1, 0)
+SolidSpaces = true
+JsonFilePath = "res://Sprites/FoG/FoGTitle.json"
+Layer = 2
 metadata/_custom_type_script = "uid://dcc6nbil6206o"
