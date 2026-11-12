@@ -21,7 +21,7 @@ public partial class TextObject : Control, IComparable<TextObject>
     [Export] public bool testing
     {
         get => false;
-        set => AcessJson();
+        set { if (value) AcessJson(); } 
     }
     
     [ExportGroup("Transform")]
@@ -92,7 +92,10 @@ public partial class TextObject : Control, IComparable<TextObject>
     
     public void AcessJson()
     {
+        if (string.IsNullOrEmpty(JsonFilePath)) return;
+        
         GD.Print("AcessJson");
+        
         var file = FileAccess.Open(JsonFilePath, FileAccess.ModeFlags.Read);
 
         if (file == null)
