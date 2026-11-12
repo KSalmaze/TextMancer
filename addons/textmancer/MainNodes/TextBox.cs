@@ -16,8 +16,22 @@ using System.Text;
 [Tool]
 public partial class TextBox : RichTextLabel
 {
-	[Export] public Vector2I resolution; // Bloquear negativos
-	[Export] public char baseChar = '.';
+	// -------- Properties --------------------------------------------------
+	
+	private Vector2I _resolution = new Vector2I(320,180);
+
+	[Export]
+	public Vector2I Resolution
+	{
+		get => _resolution;
+		set
+		{
+			_resolution = new Vector2I(Mathf.Max(1, value.X), Mathf.Max(1, value.Y));
+			if (IsNodeReady()) //RebuildAll();
+		}
+	}
+	
+	[Export] public char BaseChar = '.';
 	[Export] public int FrameRate = 15;
 	private int _textSize = 10;
 	[Export] public int TextSize {
@@ -31,7 +45,7 @@ public partial class TextBox : RichTextLabel
 		}
 	} 
 	// Adicionar Seter
-	public List<TextObject> _textObjects;
+	private List<TextObject> _textObjects;
 	private double _timeSinceLastUpdate = 0;
 	[Export] public bool testing
 	{
@@ -74,6 +88,8 @@ public partial class TextBox : RichTextLabel
 	 */
 	
 	// OPTIMIZATION UPDATE
+	
+	// -------- Methods --------------------------------------------------
 	
 	public override void _Ready()
 	{
