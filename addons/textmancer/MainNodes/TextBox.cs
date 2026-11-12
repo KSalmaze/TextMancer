@@ -10,6 +10,7 @@
 using System;
 using Godot;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 
@@ -189,6 +190,7 @@ public partial class TextBox : RichTextLabel
 		}
 		
 		GD.Print(_textObjects.Count);
+		GD.Print(_textObjects.Count(x => x.GetSignalConnectionList(TextObject.SignalName.OnTextObjectPositionChanged).Count > 0));
 
 		MarkAllDirty();
 	}
@@ -289,6 +291,8 @@ public partial class TextBox : RichTextLabel
 	
 	private void OnPositionChanged(TextObject obj)
 	{
+		GD.Print("SignalReceived");
+		
 		var r = _registered[obj];
 		int h = obj.Sprite?.Length ?? 0;
 
@@ -301,6 +305,7 @@ public partial class TextBox : RichTextLabel
 			RemoveFromLines(obj);
 			AddToLines(obj, obj.ObjectPosition.Y, h);
 		}
+		GD.Print("UpdatingTextBox");
 		NewUpdateBox();
 	}
 

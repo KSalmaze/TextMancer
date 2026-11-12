@@ -26,49 +26,26 @@ public partial class TextObject : Control, IComparable<TextObject>
     
     [ExportGroup("Transform")]
     private Vector2I _position;
-
     [Export]
     public Vector2I ObjectPosition
     {
         get => _position;
         set
         {
+            if (value == _position) return;
             if (VerifyPosition())
             {
-                Vector2I oldposition = _position;
                 _position = value;
-                EmitSignal(SignalName.OnTextObjectPositionChanged, oldposition.Y, this);
+                EmitSignal(SignalName.OnTextObjectPositionChanged, this);
             }
         }
     }
 
-    /*[Export] public Vector2I GlobalObjectPosition;
-
-    public override void _ValidateProperty(Godot.Collections.Dictionary property)
-    {
-        if (property["name"].AsStringName() == PropertyName.GlobalObjectPosition)
-        {
-            var usage = property["usage"].As<PropertyUsageFlags>() | PropertyUsageFlags.ReadOnly;
-            property["usage"] = (int)usage;
-        }
-    }*/
-
-
-    [ExportGroup("Sprite")] 
     
+    [ExportGroup("Sprite")] 
     private string _sprite;
-
     public string[] Sprite;
     [Export] private bool SolidSpaces;
-    [Export] private string SpritePreview
-    {
-        get => _sprite;
-        set
-        {
-            _sprite = value;
-            EmitSignal(SignalName.OnTextObjectLayerChanged);
-        }
-    }
     
     private string _jsonFilePath;
 
@@ -81,6 +58,8 @@ public partial class TextObject : Control, IComparable<TextObject>
             _jsonFilePath = value;
             
             AcessJson();
+            
+            EmitSignal(SignalName.OnTextObjectSpriteChanged, this);
         }
     }
 
@@ -93,9 +72,8 @@ public partial class TextObject : Control, IComparable<TextObject>
         get => _layer;
         set
         {
-            if (value <= 1) return;
             _layer = value;
-            EmitSignal(SignalName.OnTextObjectSpriteChanged);
+            EmitSignal(SignalName.OnTextObjectLayerChanged, this);
         }
     }
     
@@ -120,12 +98,13 @@ public partial class TextObject : Control, IComparable<TextObject>
         if (file == null)
         {
             Sprite[0] = "JSON ERROR";
+            EmitSignal(SignalName.OnTextObjectSpriteChanged, this);
             return;
         }
         string jsonText = file.GetAsText();
         file.Close();
         
-        JsonDocument json = JsonDocument.Parse(jsonText);
+        using JsonDocument json = JsonDocument.Parse(jsonText);
         JsonElement elements = json.RootElement.GetProperty("sprite");
         
         Sprite = new string[elements.GetArrayLength()];
