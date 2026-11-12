@@ -19,29 +19,42 @@ public partial class TextBox : RichTextLabel
 	// -------- Properties --------------------------------------------------
 	
 	private Vector2I _resolution = new Vector2I(320,180);
-
-	[Export]
-	public Vector2I Resolution
+	[Export] public Vector2I Resolution
 	{
 		get => _resolution;
 		set
 		{
 			_resolution = new Vector2I(Mathf.Max(1, value.X), Mathf.Max(1, value.Y));
-			if (IsNodeReady()) //RebuildAll();
+			if (IsNodeReady()) RebuildAll();
 		}
 	}
 	
-	[Export] public char BaseChar = '.';
-	[Export] public int FrameRate = 15;
+	private char _baseChar = '.';
+	[Export] public char BaseChar
+	{
+		get => _baseChar;
+		set
+		{
+			_baseChar = value;
+			if (IsNodeReady())
+			{
+				Array.Fill(_lineCopy, _baseChar);
+				MarkAllDirty();
+				NewUpdateBox();
+			}
+		}
+	}
+	
+	
+	[Export] public int FrameRate = 15; // Em breve vai ser controlado pelo Conductor
 	private int _textSize = 10;
 	[Export] public int TextSize {
 		get => _textSize;
 		set
 		{
-			if(value > 1){
-				_textSize = value;
-				UpdateTextObjects();
-			}
+			if (value <= 1) return;
+			_textSize = value;
+			AddThemeFontSizeOverride("normal_font_size", _textSize);
 		}
 	} 
 	// Adicionar Seter
@@ -50,53 +63,64 @@ public partial class TextBox : RichTextLabel
 	[Export] public bool testing
 	{
 		get => false;
-		set => UpdateTextObjects();
+		set
+		{
+			if (IsNodeReady())
+			{
+				UpdateTextObjects();
+				NewUpdateBox();
+			}
+		}
 	}
 
 	[Export] public char emptySpaceChar = '◙';
-
+	
+	private List<TextObject>[] _lineToObjects;
+	private readonly Dictionary<TextObject, (int top, int height)> _registered = new();
+	
 	//protected string[] _screenLines;
 	//protected StringBuilder[] _screenLinesBuilder;
 	protected char[][] _screenLines;
-	protected char[] _lineCopy; // Todo: deve ser atualizado quando a resolução X é atualizada
-
-	/// <summary>
-	/// Dictionary of layer to dictionary of line to List of TextObjets that the sprite is in that line and exactly layer.
-	/// </summary>
-	private Dictionary<int, Dictionary<int, List<TextObject>>> _layerToLinesToSprite = new Dictionary<int, Dictionary<int, List<TextObject>>>();
-
-	private HashSet<int> dirtyLines =  new HashSet<int>();
+	protected char[] _lineCopy;
+	private readonly StringBuilder _sb = new StringBuilder();
 	
-	// OPTIMIZATION UPDATE
-
-	//public Dictionary<int, List<TextObject>> TextObjects; // Dicionário : Linha -> sprites nesse linha
-	// Dicinionário : Layer -> Dicionário : Linha -> sprites nessa linha e layer
-	
-	/*
-	 *Nova função:
-	 *
-	 * -- Verificar quais linhas atualizar
-	 * -- Para cada linhas necessária a atualização
-	 *		-- Acessar as sprites nas linhas
-	 *      -- Acessar apenas a linhas global necessária e atualizar a _screenLines certa
-	 *
-	 * -- Atualizar a tela
-
-	  MAIS IDEIAS:
-	  - Criar antes do processamento os sb
-	  - Estrutura de dados onde multiplas chaves apontem para o mesmo objeto, para salvar posição X,Y -> Sprites
-	 */
-	
-	// OPTIMIZATION UPDATE
+	private HashSet<int> _dirtyLines =  new HashSet<int>();
 	
 	// -------- Methods --------------------------------------------------
 	
+	private void AllocateBuffers()
+	{
+		_lineCopy = new char[_resolution.X];
+		Array.Fill(_lineCopy, BaseChar);
+		
+		_screenLines = new char[_resolution.Y][];
+		_lineToObjects = new List<TextObject>[_resolution.Y]; 
+		for (int y = 0; y < _resolution.Y; y++)
+		{
+			_screenLines[y]   = (char[])_lineCopy.Clone();
+			_lineToObjects[y] = new List<TextObject>();
+		}
+		
+		_sb.EnsureCapacity(_resolution.Y * (_resolution.X + 1));
+	}
+	
 	public override void _Ready()
 	{
+		ChildEnteredTree += OnChildEntered;
+		ChildExitingTree += OnChildExiting;
+		
+		AllocateBuffers();
+		SetupLabel();
 		UpdateTextObjects();
-
-		// _lineCopy initialization
-		_lineCopy = new string(baseChar, resolution.X).ToCharArray();
+		NewUpdateBox();   
+	}
+	
+	private void SetupLabel()
+	{
+		BbcodeEnabled = false;
+		AutowrapMode  = TextServer.AutowrapMode.Off;
+		ScrollActive  = false;
+		AddThemeFontSizeOverride("normal_font_size", _textSize);
 	}
 	
 	public override void _Process(double delta)
@@ -105,109 +129,141 @@ public partial class TextBox : RichTextLabel
 	
 	private void NewUpdateBox()
 	{
-		foreach (int line in dirtyLines)
-		{
-			ClearScreenLine(line);
+		if (_dirtyLines.Count == 0) return;
+		foreach (int y in _dirtyLines) ComposeLine(y);
+		_dirtyLines.Clear();
+		FlushToLabel();
+	}
 
-			foreach(TextObject textObject in linhaParaSprites[line])
+	private void ComposeLine(int y)
+	{
+		char[] dst = _screenLines[y];
+		Array.Copy(_lineCopy, dst, _resolution.X);
+
+		foreach (TextObject obj in _lineToObjects[y])   // já em ordem de camada
+		{
+			string src = obj.Sprite[y - obj.ObjectPosition.Y];
+			if (src == null) continue;
+
+			int x0    = obj.ObjectPosition.X;
+			int start = Math.Max(0, -x0);                        // corta o que sai pela esquerda
+			int end   = Math.Min(src.Length, _resolution.X - x0); // corta o que sai pela direita
+
+			for (int i = start; i < end; i++)
 			{
-				string spriteLine = textObject.Sprite[line - textObject.ObjectPosition.Y];
-				for (int i = 0; i < spriteLine.Length; i++)
-				{
-					if(textObject.ObjectPosition.X + i > resolution.X) break;
-					if (spriteLine[i] == emptySpaceChar) continue;
-					_screenLines[line][textObject.ObjectPosition.X + i] = spriteLine[i];
-				}
+				char c = src[i];
+				if (c != emptySpaceChar) dst[x0 + i] = c;
 			}
 		}
-
-		dirtyLines.Clear();
 	}
-
-	private void ClearScreen()
+	
+	private void FlushToLabel()
 	{
-		for (int i = 0; i < resolution.Y; i++)
+		_sb.Clear();
+		for (int y = 0; y < _resolution.Y; y++)
 		{
-			ClearScreenLine(i);
+			_sb.Append(_screenLines[y]);
+			if (y < _resolution.Y - 1) _sb.Append('\n');
 		}
-	}
-
-	private void ClearScreenLine(int line)
-	{
-		Array.Copy(_lineCopy,_screenLines[line], resolution.X);
+		Text = _sb.ToString();
 	}
 	
-	// Sempre que um TextObject vou incluido ou removido chamar essa função
 	
-	// Functions related to update of TextObjects
+	// -------- Methods related to update of TextObjects --------------------------
 
-	protected void UpdateTextObjects()
+	private void UpdateTextObjects()
 	{
+		_textObjects?.ForEach(Unsubscribe);
+		_registered.Clear();
+		foreach (var lista in _lineToObjects)
+		{
+			lista.Clear();
+		}
+		
 		_textObjects = GetChilds<TextObject>();
-
-		if (_textObjects.Count == 0) return;
 			
 		foreach (var to in _textObjects)
 		{
-			to.OnTextObjectChangedPosition -= OnTextObjectPositionChanged;
-			to.OnTextObjectChangedPosition += OnTextObjectPositionChanged;
+			Subscribe(to);
+			AddToLines(to, to.ObjectPosition.Y, to.Sprite?.Length ?? 0);
 		}
+		
 		GD.Print(_textObjects.Count);
-		_textObjects.Sort();
-		NewUpdateBox(); // É necessário
+
+		MarkAllDirty();
+	}
+	
+	private void Subscribe(TextObject obj)
+	{
+		obj.OnTextObjectPositionChanged += OnPositionChanged;
+		obj.OnTextObjectLayerChanged    += OnLayerChanged;
+		obj.OnTextObjectSpriteChanged   += OnSpriteChanged;
 	}
 
-	protected void OnTextObjectPositionChanged(int oldGlobalPositionY, TextObject textObject)
+	private void Unsubscribe(TextObject obj)
 	{
-		// Todo: quando a sprite nova mudar a quantidade de linhas, enviar também a quantidade de linhas antiga?
-		// Dois sinais diferentes devem funcionr melhor, mais sinal em caso de mudança de layer
-		int spriteHeight = textObject.Sprite.Length;
-
-		int oldStart = oldGlobalPositionY;
-		int oldEnd = oldGlobalPositionY + spriteHeight - 1;
-		int newStart = textObject.ObjectPosition.Y;
-		int newEnd = newStart + spriteHeight - 1;
+		if (!IsInstanceValid(obj)) return;   // objeto já liberado: acessar dá ObjectDisposedException
+		obj.OnTextObjectPositionChanged -= OnPositionChanged;
+		obj.OnTextObjectLayerChanged    -= OnLayerChanged;
+		obj.OnTextObjectSpriteChanged   -= OnSpriteChanged;
+	}
 	
-		// Mark range as dirty and updating 
-		for (int i = oldStart; i <= oldEnd; i++){
-			dirtyLines.Add(i);
-			_layerToLinesToSprite[textObject.Layer][i].Remove(textObject);
+	private void AddToLines(TextObject obj, int top, int height)
+	{
+		int start = Math.Max(top, 0);
+		int end   = Math.Min(top + height - 1, _resolution.Y - 1);
+		for (int y = start; y <= end; y++)          // se start > end, não entra
+		{
+			InsertSorted(_lineToObjects[y], obj);
+			_dirtyLines.Add(y);
 		}
-		for (int i = newStart; i <= newEnd; i++){
-			dirtyLines.Add(i);
-			_layerToLinesToSprite[textObject.Layer][i].Add(textObject);
+		_registered[obj] = (top, height);
+	}
+	
+	private void RemoveFromLines(TextObject obj)
+	{
+		if (!_registered.Remove(obj, out var r)) return;
+		int start = Math.Max(r.top, 0);
+		int end   = Math.Min(r.top + r.height - 1, _resolution.Y - 1);
+		for (int y = start; y <= end; y++)
+		{
+			_lineToObjects[y].Remove(obj);
+			_dirtyLines.Add(y);
 		}
+	}
 
+	private void RebuildAll()
+	{
+		AllocateBuffers();
+		UpdateTextObjects();   // limpa _registered e reindexa tudo
+		MarkAllDirty();        // for y em 0..Y-1: _dirtyLines.Add(y)
 		NewUpdateBox();
 	}
-	/*
-	METHOD TextObjectChanged(oldGlobalPositionY, textObject)
-    h = textObject.Sprite.Length
-    newY = textObject.GlobalObjectPosition.Y
 
-    oldStart = oldGlobalPositionY
-    oldEnd   = oldGlobalPositionY + h - 1
-
-    newStart = newY
-    newEnd   = newY + h - 1
-
-    MarkRangeDirty(min(oldStart, newStart), max(oldEnd, newEnd))
-
-    overlapStart = max(oldStart, newStart)
-    overlapEnd   = min(oldEnd, newEnd)
-
-    IF oldStart < overlapStart
-        RemoveObjectFromRange(oldStart, overlapStart - 1, textObject)
-
-    IF overlapEnd < oldEnd
-        RemoveObjectFromRange(overlapEnd + 1, oldEnd, textObject)
-
-    IF newStart < overlapStart
-        AddObjectToRange(newStart, overlapStart - 1, textObject)
-
-    IF overlapEnd < newEnd
-        AddObjectToRange(overlapEnd + 1, newEnd, textObject)
-	*/
+	private void MarkAllDirty()
+	{
+		for (int i = 0; i < _screenLines.Length; i++)
+		{
+			_dirtyLines.Add(i);
+		}
+	}
+	
+	private void MarkRangeDirty(int top, int height)
+	{
+		int start = Math.Max(top, 0);
+		int end   = Math.Min(top + height - 1, _resolution.Y - 1);
+		for (int y = start; y <= end; y++)
+		{
+			_dirtyLines.Add(y);
+		}
+	}
+	
+	private static void InsertSorted(List<TextObject> list, TextObject obj)
+	{
+		int pos = list.BinarySearch(obj);
+		if (pos >= 0) return; // já está na lista
+		list.Insert(~pos, obj);
+	}
 	
 	/// <summary>
 	/// Retorna uma lista com todos os filhos do tipo T
@@ -227,5 +283,65 @@ public partial class TextBox : RichTextLabel
 		}
 
 		return childs;
+	}
+	
+	// -------- Observers ---------------------------------------------------------
+	
+	private void OnPositionChanged(TextObject obj)
+	{
+		var r = _registered[obj];
+		int h = obj.Sprite?.Length ?? 0;
+
+		if (r.top == obj.ObjectPosition.Y && r.height == h)
+		{
+			MarkRangeDirty(r.top, r.height);
+		}
+		else
+		{
+			RemoveFromLines(obj);
+			AddToLines(obj, obj.ObjectPosition.Y, h);
+		}
+		NewUpdateBox();
+	}
+
+	private void OnLayerChanged(TextObject obj)
+	{
+		// Mesmas linhas, só a ordem dentro delas muda
+		var r = _registered[obj];
+		int start = Math.Max(r.top, 0);
+		int end   = Math.Min(r.top + r.height - 1, _resolution.Y - 1);
+		for (int y = start; y <= end; y++)
+		{
+			_lineToObjects[y].Remove(obj);         // por referência, não depende da ordem
+			InsertSorted(_lineToObjects[y], obj);  // reinsere com a camada nova
+			_dirtyLines.Add(y);
+		}
+		NewUpdateBox();
+	}
+
+	private void OnSpriteChanged(TextObject obj)
+	{
+		// A altura pode ter mudado: reindexa completo
+		RemoveFromLines(obj);
+		AddToLines(obj, obj.ObjectPosition.Y, obj.Sprite?.Length ?? 0);
+		NewUpdateBox();
+	}
+
+	private void OnChildEntered(Node node)
+	{
+		if (node is not TextObject obj || !IsNodeReady()) return;
+		Subscribe(obj);
+		_textObjects.Add(obj);
+		AddToLines(obj, obj.ObjectPosition.Y, obj.Sprite?.Length ?? 0);
+		NewUpdateBox();
+	}
+
+	private void OnChildExiting(Node node)
+	{
+		if (node is not TextObject obj) return;
+		Unsubscribe(obj);
+		_textObjects.Remove(obj);
+		RemoveFromLines(obj);
+		NewUpdateBox();
 	}
 }

@@ -14,7 +14,10 @@ using System.Text.Json;
 [Tool]
 public partial class TextObject : Control, IComparable<TextObject>
 {
-    [Signal] public delegate void OnTextObjectChangedPositionEventHandler(int oldYPosition, TextObject thisObj);
+    [Signal] public delegate void OnTextObjectPositionChangedEventHandler(TextObject thisObj);
+    [Signal] public delegate void OnTextObjectLayerChangedEventHandler(TextObject thisObj);
+    [Signal] public delegate void OnTextObjectSpriteChangedEventHandler(TextObject thisObj);
+    
     [Export] public bool testing
     {
         get => false;
@@ -34,7 +37,7 @@ public partial class TextObject : Control, IComparable<TextObject>
             {
                 Vector2I oldposition = _position;
                 _position = value;
-                EmitSignal(SignalName.OnTextObjectChangedPosition, oldposition.Y, this);
+                EmitSignal(SignalName.OnTextObjectPositionChanged, oldposition.Y, this);
             }
         }
     }
@@ -63,7 +66,7 @@ public partial class TextObject : Control, IComparable<TextObject>
         set
         {
             _sprite = value;
-            //EmitSignal(SignalName.TextObjectChanged);
+            EmitSignal(SignalName.OnTextObjectLayerChanged);
         }
     }
     
@@ -82,7 +85,19 @@ public partial class TextObject : Control, IComparable<TextObject>
     }
 
     
-    [Export] public int Layer;
+    private int _layer;
+
+    [Export]
+    public int Layer
+    {
+        get => _layer;
+        set
+        {
+            if (value <= 1) return;
+            _layer = value;
+            EmitSignal(SignalName.OnTextObjectSpriteChanged);
+        }
+    }
     
     [ExportGroup("Collision")]
     [Export(PropertyHint.File, "*.json")] public string CollisionJsonFilePath; 
@@ -125,8 +140,10 @@ public partial class TextObject : Control, IComparable<TextObject>
     }
     
     // Interfaces
-    public int CompareTo(TextObject obj)
+    public int CompareTo(TextObject other)
     {
-        return Layer.CompareTo(obj.Layer);
+        int c = Layer.CompareTo(other.Layer);
+        if (c != 0) return c;
+        return GetIndex().CompareTo(other.GetIndex()); // ordem na árvore como desempate
     }
 }

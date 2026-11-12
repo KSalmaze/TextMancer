@@ -16,7 +16,7 @@ namespace TextMancer.addons.textmancer.OtherNodes;
 [Tool]
 public partial class DrawMode: TextObject
 {
-	private string[] _fullSprite;
+	/*private string[] _fullSprite;
 	
 	public enum Mode
 	{
@@ -86,5 +86,5 @@ public partial class DrawMode: TextObject
 	
 	// Sinais
 	// OnStarDraw
-	// OnEndDraw
+	// OnEndDraw*/
 }
