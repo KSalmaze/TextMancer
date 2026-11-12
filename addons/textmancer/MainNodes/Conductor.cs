@@ -18,7 +18,5 @@ public partial class Conductor: Control
 	/// Indica se o processamento gráfico preditivo será ou não utilizado para TextBoxs filhas.
 	/// Mais informações disponível na documentação: <link:HYPERTHREADING>
 	/// </summary>
-	[Export] public bool HyperThreadingEnabled = false;
-	// Todo : Renomear variavel
-	// Todo : 
+	[Export] public bool PreComputeEnabled = false;
 }
