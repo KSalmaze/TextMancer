@@ -1,0 +1,99 @@
+[gd_scene load_steps=5 format=3 uid="uid://dpr1orthe50xp"]
+
+[ext_resource type="Script" uid="uid://byjf3dp53vwvi" path="res://addons/textmancer/MainNodes/Conductor.cs" id="1_fw23f"]
+[ext_resource type="FontFile" uid="uid://daag56kvxsdf2" path="res://Fonts/SpaceMono-Regular.ttf" id="2_1oo2x"]
+[ext_resource type="Script" uid="uid://cafw108hsn24b" path="res://addons/textmancer/MainNodes/TextBox.cs" id="3_1fiaj"]
+[ext_resource type="Script" uid="uid://dcc6nbil6206o" path="res://addons/textmancer/MainNodes/TextObject.cs" id="4_ltdjk"]
+
+[node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Conductor" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_fw23f")
+metadata/_custom_type_script = "uid://byjf3dp53vwvi"
+
+[node name="MainTextBox" type="RichTextLabel" parent="Conductor"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/line_separation = -5
+theme_override_fonts/normal_font = ExtResource("2_1oo2x")
+bbcode_enabled = true
+text = "[font_size=10]                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+             _________          _______    _                 _______  _          _______  _______    _______          _________ _                     
+             \\__   __/|\\     /|(  ____ \\  ( \\      |\\     /|(  ____ )| \\    /\\  (  ___  )(  ____ \\  (  ____ \\|\\     /|\\__   __/( \\                    
+                ) (   | )   ( || (    \\/  | (      | )   ( || (    )||  \\  / /  | (   ) || (    \\/  | (    \\/| )   ( |   ) (   | (                    
+                | |   | (___) || (__      | |      | |   | || (____)||  (_/ /   | |   | || (__      | (__    | |   | |   | |   | |                    
+                | |   |  ___  ||  __)     | |      | |   | ||     __)|   _ (    | |   | ||  __)     |  __)   ( (   ) )   | |   | |                    
+                | |   | (   ) || (        | |      | |   | || (\\ (   |  ( \\ \\   | |   | || (        | (       \\ \\_/ /    | |   | |                    
+                | |   | )   ( || (____/\\  | (____/\\| (___) || ) \\ \\__|  /  \\ \\  | (___) || )        | (____/\\  \\   /  ___) (___| (____/\\              
+                )_(   |/     \\|(_______/  (_______/(_______)|/   \\__/|_/    \\/  (_______)|/         (_______/   \\_/   \\_______/(_______/              
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+[/font_size]"
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 35
+script = ExtResource("3_1fiaj")
+metadata/_custom_type_script = "uid://cafw108hsn24b"
+
+[node name="TextObject" type="Control" parent="Conductor/MainTextBox"]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("4_ltdjk")
+metadata/_custom_type_script = "uid://dcc6nbil6206o"
