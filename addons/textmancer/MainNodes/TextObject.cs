@@ -10,6 +10,7 @@
 using Godot;
 using System;
 using System.Text.Json;
+using TextMancer.addons.textmancer.MainNodes;
 
 [Tool]
 public partial class TextObject : Control, IComparable<TextObject>
@@ -79,6 +80,25 @@ public partial class TextObject : Control, IComparable<TextObject>
     
     [ExportGroup("Collision")]
     [Export(PropertyHint.File, "*.json")] public string CollisionJsonFilePath; 
+    
+    // -------- Config ---------------------------------------------------
+	
+    public override string[] _GetConfigurationWarnings()
+    {
+        if (GetParent() is not TextBox)
+            return ["TextObject precisa ser filho de um TextBox"];
+
+        return Array.Empty<string>();
+    }
+
+    public override void _Notification(int what)
+    {
+        // reavalia o aviso quando o nó muda de pai
+        if (what == NotificationParented || what == NotificationUnparented)
+            UpdateConfigurationWarnings();
+    }
+    
+    // -------- Methods --------------------------------------------------
     
     public override void _Ready()
     {

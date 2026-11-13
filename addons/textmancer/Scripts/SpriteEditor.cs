@@ -13,7 +13,7 @@ using System.Linq;
 namespace TextMancer.addons.textmancer.Scripts;
 
 [Tool]
-public partial class SpriteEditor: TextBox
+public partial class SpriteEditor: MainNodes.TextBox
 {
 /*	public TextObject SpriteObject;
 	[Export] public bool testingTwo

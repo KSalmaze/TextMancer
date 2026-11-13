@@ -8,11 +8,12 @@
 // -----------------------------------------------------------------------
 
 using System;
-using Godot;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Godot;
 
+namespace TextMancer.addons.textmancer.MainNodes;
 
 [Tool]
 public partial class TextBox : RichTextLabel
@@ -58,7 +59,7 @@ public partial class TextBox : RichTextLabel
 			AddThemeFontSizeOverride("normal_font_size", _textSize);
 		}
 	} 
-	// Adicionar Seter
+	
 	private List<TextObject> _textObjects;
 	private double _timeSinceLastUpdate = 0;
 	[Export] public bool testing
@@ -79,13 +80,28 @@ public partial class TextBox : RichTextLabel
 	private List<TextObject>[] _lineToObjects;
 	private readonly Dictionary<TextObject, (int top, int height)> _registered = new();
 	
-	//protected string[] _screenLines;
-	//protected StringBuilder[] _screenLinesBuilder;
-	protected char[][] _screenLines;
-	protected char[] _lineCopy;
+	private char[][] _screenLines;
+	private char[] _lineCopy;
 	private readonly StringBuilder _sb = new StringBuilder();
 	
 	private HashSet<int> _dirtyLines =  new HashSet<int>();
+	
+	// -------- Config ---------------------------------------------------
+	
+	public override string[] _GetConfigurationWarnings()
+	{
+		if (GetParent() is not Conductor)
+			return ["TextBox precisa ser filho de um Conductor"];
+
+		return Array.Empty<string>();
+	}
+
+	public override void _Notification(int what)
+	{
+		// reavalia o aviso quando o nó muda de pai
+		if (what == NotificationParented || what == NotificationUnparented)
+			UpdateConfigurationWarnings();
+	}
 	
 	// -------- Methods --------------------------------------------------
 	
